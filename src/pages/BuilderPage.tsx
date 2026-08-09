@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGenerator } from '../context/GeneratorContext';
 import { Section } from '../components/ui/Section';
 import { Card } from '../components/ui/Card';
 import { ImageUploader } from '../components/image/ImageUploader';
+import { ImageControls } from '../components/image/ImageControls';
 import { PreviewWindow } from '../components/preview/PreviewWindow';
 import { FiUser, FiCode, FiAward } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -17,14 +18,30 @@ const MOCK_TITLES = [
 ];
 
 export const BuilderPage: React.FC = () => {
-  const { uploadedImage, setUploadedImage, builderInfo, setBuilderInfo } = useGenerator();
+  const {
+    uploadedImage,
+    setUploadedImage,
+    builderData,
+    setBuilderData,
+    generatedTitle,
+    setGeneratedTitle,
+    setPreviewMode,
+  } = useGenerator();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    setPreviewMode('builder');
+  }, [setPreviewMode]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setBuilderInfo((prev) => ({
+    setBuilderData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setGeneratedTitle(e.target.value);
   };
 
   return (
@@ -61,6 +78,9 @@ export const BuilderPage: React.FC = () => {
             <ImageUploader value={uploadedImage} onChange={setUploadedImage} />
           </Card>
 
+          {/* Controls selector */}
+          <ImageControls />
+
           {/* Builder info form */}
           <Card className="border border-white/5 bg-neutral-900/10 p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider mb-4 font-mono text-white">
@@ -76,11 +96,11 @@ export const BuilderPage: React.FC = () => {
                 <input
                   type="text"
                   name="name"
-                  value={builderInfo.name}
+                  value={builderData.name}
                   onChange={handleInputChange}
                   placeholder="e.g. Satapathy Prayasu"
                   maxLength={25}
-                  className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 focus:ring-1 focus:ring-accent-green/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none transition-all duration-200"
+                  className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 focus:ring-1 focus:ring-accent-green/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none transition-all duration-200 font-sans"
                 />
               </div>
 
@@ -93,11 +113,11 @@ export const BuilderPage: React.FC = () => {
                 <input
                   type="text"
                   name="role"
-                  value={builderInfo.role}
+                  value={builderData.role}
                   onChange={handleInputChange}
                   placeholder="e.g. React & Rust Dev"
                   maxLength={30}
-                  className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 focus:ring-1 focus:ring-accent-green/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none transition-all duration-200"
+                  className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 focus:ring-1 focus:ring-accent-green/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none transition-all duration-200 font-sans"
                 />
               </div>
 
@@ -115,9 +135,9 @@ export const BuilderPage: React.FC = () => {
                 <div className="relative">
                   <select
                     name="title"
-                    value={builderInfo.title}
-                    onChange={handleInputChange}
-                    className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 rounded-xl px-4 py-2.5 text-sm text-white outline-none appearance-none transition-all duration-200 cursor-pointer"
+                    value={generatedTitle}
+                    onChange={handleTitleChange}
+                    className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 rounded-xl px-4 py-2.5 text-sm text-white outline-none appearance-none transition-all duration-200 cursor-pointer font-sans"
                   >
                     {MOCK_TITLES.map((title) => (
                       <option key={title} value={title} className="bg-neutral-950">

@@ -1,82 +1,55 @@
 import React from 'react';
 import { useGenerator } from '../../context/GeneratorContext';
-import { Badge } from '../ui/Badge';
+import { useImageTransform } from '../../hooks/useImageTransform';
+import { LoadingSkeleton } from '../ui/LoadingSkeleton';
 
 export const BuilderPreview: React.FC = () => {
-  const { uploadedImage, builderInfo } = useGenerator();
+  const { uploadedImage } = useGenerator();
+  const { previewUrl, isProcessing, error } = useImageTransform();
 
   return (
-    <div className="relative w-full max-w-[280px] aspect-[1/1.58] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl bg-gradient-to-b from-neutral-900 via-neutral-950 to-neutral-950 p-6 flex flex-col justify-between mx-auto">
-      {/* Top hanger slot indicator */}
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-2.5 rounded-full bg-black/40 border border-white/5" />
+    <div className="relative w-full max-w-[280px] aspect-[1/1.58] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl bg-neutral-950 flex items-center justify-center p-4">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-radial-gradient from-accent-green/5 to-transparent pointer-events-none" />
 
-      {/* Glow Effects */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-accent-blue/10 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent-green/10 blur-3xl pointer-events-none" />
+      {uploadedImage ? (
+        <div className="relative w-full h-full flex items-center justify-center">
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Live Builder ID Preview"
+              className="w-full h-full object-contain rounded-2xl"
+            />
+          ) : (
+            <LoadingSkeleton className="w-full h-full rounded-2xl" />
+          )}
 
-      {/* Header */}
-      <div className="flex flex-col items-center mt-4">
-        <span className="text-[10px] font-mono text-accent-blue tracking-[0.25em] font-extrabold">HH GOA // 2026</span>
-        <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-widest mt-0.5">BUILDER IDENTITY</span>
-      </div>
-
-      {/* Image Area */}
-      <div className="my-5 aspect-square w-[140px] mx-auto rounded-2xl overflow-hidden border border-white/5 relative bg-neutral-950/80 flex items-center justify-center">
-        {uploadedImage ? (
-          <img
-            src={uploadedImage}
-            alt="Builder ID"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center p-4 text-center">
-            <div className="w-10 h-10 rounded-full border border-dashed border-neutral-800 flex items-center justify-center text-neutral-600 mb-2">
-              ID
+          {/* Error visual state */}
+          {error && (
+            <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 text-center rounded-2xl">
+              <p className="text-xs font-mono text-red-400">{error}</p>
             </div>
-            <span className="text-[10px] text-neutral-500 font-mono">PORTRAIT PKG</span>
+          )}
+
+          {/* Live rendering subtle indicator */}
+          {isProcessing && (
+            <div className="absolute top-6 right-6">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
+              </span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-center p-6 select-none">
+          <div className="w-16 h-16 rounded-full border border-dashed border-neutral-800 flex items-center justify-center mx-auto mb-4 text-neutral-600">
+            ID
           </div>
-        )}
-      </div>
-
-      {/* Details Section */}
-      <div className="flex-grow flex flex-col justify-end text-center mb-4">
-        {/* Name */}
-        <div className="mb-2">
-          {builderInfo.name ? (
-            <h4 className="text-base font-bold tracking-tight text-white line-clamp-1">{builderInfo.name}</h4>
-          ) : (
-            <div className="h-6 w-32 mx-auto bg-neutral-800/50 animate-pulse rounded-md" />
-          )}
+          <p className="text-sm font-semibold text-neutral-400 font-sans">No Image Uploaded</p>
+          <p className="text-xs text-neutral-500 mt-1 max-w-[200px] font-sans">Upload a photo and details to see the builder card preview</p>
         </div>
-
-        {/* Stack / Role */}
-        <div className="mb-4">
-          {builderInfo.role ? (
-            <p className="text-[11px] font-mono text-neutral-400 tracking-wide line-clamp-1">{builderInfo.role}</p>
-          ) : (
-            <div className="h-4 w-24 mx-auto bg-neutral-800/40 animate-pulse rounded-md mt-1" />
-          )}
-        </div>
-
-        {/* Title Badges */}
-        <div className="flex justify-center">
-          <Badge variant="glow-green">
-            {builderInfo.title || 'BUILDER'}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Footer / Meta */}
-      <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[7px] font-mono text-neutral-500">
-        <div className="flex flex-col items-start">
-          <span>STATION: GOA_SAND</span>
-          <span>DATE: 28-31_OCT_2026</span>
-        </div>
-        <div className="flex flex-col items-end">
-          <span className="text-accent-blue font-bold">VERIFIED_BUILDER</span>
-          <span>ID: 247-PM-STU</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
