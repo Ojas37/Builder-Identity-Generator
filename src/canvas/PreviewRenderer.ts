@@ -238,6 +238,272 @@ export class PreviewRenderer {
   }
 
   /**
+   * Programmatically draws a curved palm tree vector.
+   */
+  public static drawPalmTree(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    height: number,
+    scale: number,
+    color: string
+  ): void {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2 * scale;
+    
+    // Trunk (slightly curved bezier)
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x - 10 * scale, y - height / 2, x - 5 * scale, y - height);
+    ctx.stroke();
+
+    // Leaves (fronds) radiating from top center
+    const lx = x - 5 * scale;
+    const ly = y - height;
+    const leafAngles = [-120, -90, -60, -30, 0, 30];
+    ctx.lineWidth = 1 * scale;
+
+    leafAngles.forEach((angleDeg) => {
+      const angle = (angleDeg * Math.PI) / 180;
+      const leafLen = 22 * scale;
+      const targetX = lx + Math.cos(angle) * leafLen;
+      const targetY = ly + Math.sin(angle) * leafLen;
+
+      ctx.beginPath();
+      ctx.moveTo(lx, ly);
+      ctx.quadraticCurveTo(
+        lx + Math.cos(angle - 0.2) * leafLen,
+        ly + Math.sin(angle - 0.2) * leafLen,
+        targetX,
+        targetY
+      );
+      ctx.stroke();
+
+      // Draw sub-leaves (needles) along the frond stem
+      for (let j = 1; j <= 5; j++) {
+        const t = j / 5;
+        const px = lx + (targetX - lx) * t;
+        const py = ly + (targetY - ly) * t;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(
+          px - 4 * scale * Math.sin(angle),
+          py + 4 * scale * Math.cos(angle)
+        );
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws a retro beach hut scenery with sand hills and parked scooter.
+   */
+  public static drawBeachHut(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    scale: number
+  ): void {
+    ctx.save();
+    
+    // Sand hill base backdrop
+    ctx.fillStyle = 'rgba(0, 108, 53, 0.08)'; // green-tinted hills
+    ctx.beginPath();
+    ctx.ellipse(x + 25 * scale, y + 42 * scale, 60 * scale, 18 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hut main body
+    ctx.fillStyle = '#006c35'; // Brand Green
+    ctx.fillRect(x, y + 10 * scale, 35 * scale, 25 * scale);
+    
+    // Roof triangle
+    ctx.fillStyle = '#ff007f'; // Brand Pink
+    ctx.beginPath();
+    ctx.moveTo(x - 5 * scale, y + 10 * scale);
+    ctx.lineTo(x + 17.5 * scale, y - 5 * scale);
+    ctx.lineTo(x + 40 * scale, y + 10 * scale);
+    ctx.closePath();
+    ctx.fill();
+
+    // Yellow door / window details
+    ctx.fillStyle = '#ffd000'; // Brand Yellow
+    ctx.fillRect(x + 6 * scale, y + 18 * scale, 8 * scale, 17 * scale); // Door
+    ctx.fillRect(x + 22 * scale, y + 16 * scale, 7 * scale, 7 * scale); // Window
+    
+    // Parked pink scooter vector next to hut
+    const sX = x - 18 * scale;
+    const sY = y + 25 * scale;
+    ctx.fillStyle = '#ff007f'; // Scooter body
+    ctx.fillRect(sX, sY, 12 * scale, 6 * scale);
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(sX + 2 * scale, sY + 8 * scale, 3 * scale, 0, Math.PI * 2); // Front wheel
+    ctx.arc(sX + 10 * scale, sY + 8 * scale, 3 * scale, 0, Math.PI * 2); // Rear wheel
+    ctx.fill();
+    
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws a scalloped floral framing ring with small petal arcs and floral cores.
+   */
+  public static drawScallopedBorder(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    radius: number,
+    scale: number
+  ): void {
+    ctx.save();
+    
+    // Draw scalloped circular petals along perimeter
+    const numScallops = 32;
+    ctx.fillStyle = '#ffd000'; // Brand Yellow petals
+    ctx.strokeStyle = '#ffd000';
+    ctx.lineWidth = 1 * scale;
+
+    for (let i = 0; i < numScallops; i++) {
+      const angle = (i * Math.PI * 2) / numScallops;
+      const scallopX = cx + Math.cos(angle) * radius;
+      const scallopY = cy + Math.sin(angle) * radius;
+      
+      ctx.beginPath();
+      ctx.arc(scallopX, scallopY, 6 * scale, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Red/pink flower centers inside each scalloped petal
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.arc(scallopX, scallopY, 2 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffd000'; // Reset
+    }
+
+    // Draw solid forest green backing ring just inside the scallops
+    ctx.strokeStyle = '#006c35';
+    ctx.lineWidth = 3 * scale;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius - 2 * scale, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws a postage stamp with perforated edges and a miniature sunset inside.
+   */
+  public static drawPerforatedStamp(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    scale: number,
+    cutoutColor = '#030712'
+  ): void {
+    ctx.save();
+    
+    // Draw white stamp paper body
+    ctx.fillStyle = '#fdfcf7';
+    ctx.fillRect(x, y, w, h);
+
+    // Subtract circles along the edges to simulate perforated stamp holes
+    ctx.fillStyle = cutoutColor;
+    const pRadius = 3 * scale;
+    const step = 8 * scale;
+
+    // Top and Bottom perforations
+    for (let curX = x + 4 * scale; curX <= x + w; curX += step) {
+      ctx.beginPath();
+      ctx.arc(curX, y, pRadius, 0, Math.PI * 2);
+      ctx.arc(curX, y + h, pRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Left and Right perforations
+    for (let curY = y + 4 * scale; curY <= y + h; curY += step) {
+      ctx.beginPath();
+      ctx.arc(x, curY, pRadius, 0, Math.PI * 2);
+      ctx.arc(x + w, curY, pRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Draw inner picture: sunset gradient rising over waves
+    const px = x + 6 * scale;
+    const py = y + 6 * scale;
+    const pw = w - 12 * scale;
+    const ph = h - 12 * scale;
+
+    const stampGrad = ctx.createLinearGradient(px, py, px, py + ph);
+    stampGrad.addColorStop(0, '#ffd000'); // Yellow sun
+    stampGrad.addColorStop(1, '#ff007f'); // Pink sky
+    ctx.fillStyle = stampGrad;
+    ctx.fillRect(px, py, pw, ph);
+
+    // Ocean waves curved vector lines
+    ctx.strokeStyle = '#006c35';
+    ctx.lineWidth = 1 * scale;
+    ctx.beginPath();
+    ctx.moveTo(px, py + ph - 8 * scale);
+    ctx.quadraticCurveTo(px + pw / 2, py + ph - 12 * scale, px + pw, py + ph - 8 * scale);
+    ctx.stroke();
+
+    // Text labels inside stamp
+    ctx.fillStyle = '#006c35';
+    ctx.font = `bold ${Math.round(7 * scale)}px "Space Grotesk", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('GOA', px + pw / 2, py + 8 * scale);
+    ctx.fillText('INDIA', px + pw / 2, py + 16 * scale);
+
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws text along a circle arc pathway.
+   */
+  public static drawCurvedText(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    cx: number,
+    cy: number,
+    radius: number,
+    startAngle: number,
+    font: string,
+    color: string,
+    scale: number,
+    isReversed = false
+  ): void {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const characters = text.split('');
+    const numChars = characters.length;
+    
+    // Spacing index adjusting dynamically by radius size
+    const angleStep = 0.08 * (1.5 / (radius / 100)) * (scale || 1.0);
+    
+    characters.forEach((char, i) => {
+      const idx = isReversed ? numChars - 1 - i : i;
+      const charAngle = startAngle + (idx - numChars / 2) * angleStep;
+      
+      ctx.save();
+      const px = cx + Math.cos(charAngle) * radius;
+      const py = cy + Math.sin(charAngle) * radius;
+      ctx.translate(px, py);
+      
+      ctx.rotate(charAngle + (isReversed ? -Math.PI / 2 : Math.PI / 2));
+      ctx.fillText(char, 0, 0);
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  /**
    * Renders the profile picture frame preview on a canvas dynamically.
    */
   public static renderFramePreview(
@@ -364,22 +630,14 @@ export class PreviewRenderer {
     }
 
     // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
-    const portSize = 240 * scale;
-    const portX = (width - portSize) / 2;
-    const portY = 140 * scale;
+    const isBoardingPass = template.id === 'goa-boarding-pass';
+    const portSize = isBoardingPass ? 160 * scale : 240 * scale;
+    const portX = isBoardingPass ? 85 * scale : (width - portSize) / 2;
+    const portY = isBoardingPass ? 150 * scale : 140 * scale;
 
     ctx.save();
-    if (template.id === 'goa-boarding-pass') {
+    if (isBoardingPass) {
       // Circular crop portrait matching boarding pass ticket templates
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.lineWidth = 2 * scale;
-      
-      // Draw outer gold circular backing frame
-      ctx.strokeStyle = '#ffd000';
-      ctx.beginPath();
-      ctx.arc(portX + portSize / 2, portY + portSize / 2, portSize / 2 + 3 * scale, 0, Math.PI * 2);
-      ctx.stroke();
-
       ctx.beginPath();
       ctx.arc(portX + portSize / 2, portY + portSize / 2, portSize / 2, 0, Math.PI * 2);
       ctx.clip();
@@ -402,6 +660,7 @@ export class PreviewRenderer {
     ctx.restore();
 
     // 5. Draw Details
+    const textCenterX = isBoardingPass ? 165 * scale : width / 2;
     ctx.textAlign = 'center';
     ctx.fillStyle = template.colors.text;
 
@@ -410,14 +669,14 @@ export class PreviewRenderer {
     ctx.font = `bold ${Math.round(24 * scale)}px ${template.typography.heading}`;
     
     // Safe text bounds check
-    const maxTextWidth = width - 80 * scale;
-    let nameFontW = 24;
+    const maxTextWidth = isBoardingPass ? 260 * scale : width - 80 * scale;
+    let nameFontW = isBoardingPass ? 18 : 24;
     ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
-    while (ctx.measureText(name).width > maxTextWidth && nameFontW > 14) {
+    while (ctx.measureText(name).width > maxTextWidth && nameFontW > 12) {
       nameFontW -= 2;
       ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
     }
-    ctx.fillText(name, width / 2, 440 * scale);
+    ctx.fillText(name, textCenterX, 440 * scale);
 
     // Role
     const role = (data.role || 'STACK / ROLE').toUpperCase();
@@ -430,7 +689,7 @@ export class PreviewRenderer {
       roleFontW -= 1;
       ctx.font = `${Math.round(roleFontW * scale)}px ${template.typography.mono}`;
     }
-    ctx.fillText(role, width / 2, 475 * scale);
+    ctx.fillText(role, textCenterX, 475 * scale);
 
     // 6. Title Badge (Wizard etc. at y=515 in base)
     const title = (data.title || 'BUILDER').toUpperCase();
@@ -442,7 +701,7 @@ export class PreviewRenderer {
     const textWidth = ctx.measureText(title).width;
     const badgeW = textWidth + 30 * scale;
     const badgeH = 26 * scale;
-    const badgeX = (width - badgeW) / 2;
+    const badgeX = textCenterX - badgeW / 2;
     const badgeY = 515 * scale;
 
     ctx.beginPath();
@@ -455,7 +714,7 @@ export class PreviewRenderer {
     ctx.stroke();
 
     ctx.fillStyle = template.colors.badgeText;
-    ctx.fillText(title, width / 2, badgeY + 17 * scale);
+    ctx.fillText(title, textCenterX, badgeY + 17 * scale);
 
     // 7. Footer Divider Line (y=660 in base)
     const footerY = 660 * scale;

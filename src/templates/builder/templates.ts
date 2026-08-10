@@ -24,7 +24,7 @@ export const builderTemplates: BuilderTemplate[] = [
   {
     id: 'goa-boarding-pass',
     name: 'Goa Boarding Pass',
-    description: 'Cream boarding ticket with a tear-off stub, QR code, barcode, and green postmarks.',
+    description: 'Cream ticket stub with coconut palms, beach huts, scalloped photo frames, and stamps.',
     previewColor: '#f4f1ea',
     colors: {
       backgroundStart: '#f4f1ea',
@@ -32,9 +32,9 @@ export const builderTemplates: BuilderTemplate[] = [
       primary: '#006c35',
       secondary: '#ffd000',
       accent: '#ff007f',
-      text: '#006c35',
-      badgeBg: 'rgba(0, 108, 53, 0.1)',
-      badgeText: '#006c35',
+      text: '#ffffff', // White name text to stand out in the green ticket banner box!
+      badgeBg: 'rgba(255, 255, 255, 0.2)',
+      badgeText: '#ffd000',
     },
     typography: {
       heading: '"DM Serif Display", Georgia, serif',
@@ -48,7 +48,7 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.fillStyle = '#f4f1ea';
       ctx.fillRect(0, 0, width, height);
 
-      // Perforated tear-off stub divider line (dotted) at x = 320 * scale
+      // Perforated tear-off stub divider line (dotted) at x = 330 * scale
       ctx.strokeStyle = '#006c35';
       ctx.lineWidth = 2 * scale;
       ctx.setLineDash([4 * scale, 4 * scale]);
@@ -65,6 +65,12 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.arc(330 * scale, height, 10 * scale, 0, Math.PI * 2);
       ctx.fill();
 
+      // Draw beach coconut palm trees in the bottom-left stub
+      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 60 * scale, 75 * scale, scale, '#006c35');
+      
+      // Draw retro beach hut scenery in the bottom-left stub
+      PreviewRenderer.drawBeachHut(ctx, 80 * scale, height - 105 * scale, scale);
+
       // Outer thin ticket border
       ctx.strokeStyle = '#006c35';
       ctx.lineWidth = 1.5 * scale;
@@ -73,19 +79,26 @@ export const builderTemplates: BuilderTemplate[] = [
     renderOverlay(ctx, config, data) {
       const { height, scale } = config;
 
-      // Draw top logo header inside the left section
+      // 1. Draw top brand logo header inside the left section
       ctx.fillStyle = '#006c35';
       ctx.font = `bold ${Math.round(15 * scale)}px "DM Serif Display", Georgia, serif`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText('HACKER HOUSE GOA', 30 * scale, 65 * scale);
 
-      // Draw Devanagari stamp गोवा next to header
+      // Draw Devanagari stamp next to header
       ctx.fillStyle = '#ff007f';
       ctx.font = `bold ${Math.round(13 * scale)}px "Space Grotesk", sans-serif`;
       ctx.fillText('गोवा', 195 * scale, 65 * scale);
 
-      // Draw vertical meta banner along the left side
+      // 2. Draw golden scalloped floral border around circular photo frame
+      // Center of left stub: cx = 165 * scale. cy = 230 * scale. radius = 80 * scale.
+      PreviewRenderer.drawScallopedBorder(ctx, 165 * scale, 230 * scale, 80 * scale, scale);
+
+      // 3. Draw postage stamp in the top right of the left stub
+      PreviewRenderer.drawPerforatedStamp(ctx, 245 * scale, 20 * scale, 65 * scale, 85 * scale, scale, '#f4f1ea');
+
+      // 4. Draw vertical meta banner along the left side
       ctx.save();
       ctx.translate(25 * scale, height / 2);
       ctx.rotate(-Math.PI / 2);
@@ -94,6 +107,16 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.textAlign = 'center';
       ctx.fillText('28 - 31 OCT 2026 // BUILDER PASS', 0, 0);
       ctx.restore();
+
+      // 5. Draw dark green banner backing box for name and role
+      ctx.fillStyle = '#006c35';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(30 * scale, 412 * scale, 270 * scale, 80 * scale, 6 * scale);
+      } else {
+        ctx.rect(30 * scale, 412 * scale, 270 * scale, 80 * scale);
+      }
+      ctx.fill();
 
       // Perforated stub (right side layout): Event flight information
       const stubX = 350 * scale;
@@ -140,7 +163,7 @@ export const builderTemplates: BuilderTemplate[] = [
         currentX += w + 2 * scale;
       }
 
-      // Draw postmark stamp "GOA 2026" on left portrait side
+      // Draw postmark stamp "GOA 2026" inside the left stub
       PreviewRenderer.drawPostmarkStamp(ctx, 275 * scale, 360 * scale, 28 * scale, 'GOA 2026', '#006c35', scale);
     },
   },
