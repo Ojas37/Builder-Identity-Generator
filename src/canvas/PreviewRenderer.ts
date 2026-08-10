@@ -69,6 +69,175 @@ export class PreviewRenderer {
   }
 
   /**
+   * Programmatically draws a vector star.
+   */
+  public static drawStar(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    spikes: number,
+    outerRadius: number,
+    innerRadius: number
+  ): void {
+    let rot = (Math.PI / 2) * 3;
+    let x = cx;
+    let y = cy;
+    const step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+      x = cx + Math.cos(rot) * outerRadius;
+      y = cy + Math.sin(rot) * outerRadius;
+      ctx.lineTo(x, y);
+      rot += step;
+
+      x = cx + Math.cos(rot) * innerRadius;
+      y = cy + Math.sin(rot) * innerRadius;
+      ctx.lineTo(x, y);
+      rot += step;
+    }
+    ctx.lineTo(cx, cy - outerRadius);
+    ctx.closePath();
+  }
+
+  /**
+   * Programmatically draws a row of rating stars.
+   */
+  public static drawStarRating(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    filledCount: number,
+    maxCount: number,
+    size: number,
+    color: string
+  ): void {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+
+    for (let i = 0; i < maxCount; i++) {
+      const isFilled = i < filledCount;
+      const starX = x + i * (size * 1.5);
+      
+      this.drawStar(ctx, starX, y, 5, size, size / 2.2);
+      
+      if (isFilled) {
+        ctx.fill();
+      } else {
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws a retro circular postmark stamp.
+   */
+  public static drawPostmarkStamp(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    radius: number,
+    text: string,
+    color: string,
+    scale: number
+  ): void {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-12 * Math.PI / 180);
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1.5 * scale;
+
+    // Outer circle
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Inner circle
+    ctx.beginPath();
+    ctx.arc(0, 0, radius - 4 * scale, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Draw split divider lines inside circle
+    ctx.beginPath();
+    ctx.moveTo(-radius + 6 * scale, -2 * scale);
+    ctx.lineTo(radius - 6 * scale, -2 * scale);
+    ctx.moveTo(-radius + 6 * scale, 2 * scale);
+    ctx.lineTo(radius - 6 * scale, 2 * scale);
+    ctx.stroke();
+
+    // Text centered inside stamp
+    ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 0, 0);
+
+    ctx.restore();
+  }
+
+  /**
+   * Programmatically draws a pixel-perfect QR Code representation.
+   */
+  public static drawQRCode(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    size: number,
+    color: string
+  ): void {
+    ctx.save();
+    ctx.fillStyle = color;
+    const p = size / 10; // 10x10 modular resolution grid
+
+    // 1. Finder pattern: top left
+    ctx.fillRect(x, y, p * 3, p);
+    ctx.fillRect(x, y, p, p * 3);
+    ctx.fillRect(x + p * 2, y, p, p * 3);
+    ctx.fillRect(x, y + p * 2, p * 3, p);
+    ctx.fillRect(x + p, y + p, p, p);
+
+    // 2. Finder pattern: top right
+    ctx.fillRect(x + size - p * 3, y, p * 3, p);
+    ctx.fillRect(x + size - p * 3, y, p, p * 3);
+    ctx.fillRect(x + size - p, y, p, p * 3);
+    ctx.fillRect(x + size - p * 3, y + p * 2, p * 3, p);
+    ctx.fillRect(x + size - p * 2, y + p, p, p);
+
+    // 3. Finder pattern: bottom left
+    ctx.fillRect(x, y + size - p * 3, p * 3, p);
+    ctx.fillRect(x, y + size - p * 3, p, p * 3);
+    ctx.fillRect(x + p * 2, y + size - p * 3, p, p * 3);
+    ctx.fillRect(x, y + size - p, p * 3, p);
+    ctx.fillRect(x + p, y + size - p * 2, p, p);
+
+    // 4. Generate pseudo-random grid details matching QR specs
+    let lcg = 54321; // Linear congruential seed
+    const nextRand = () => {
+      lcg = (lcg * 1103515245 + 12345) & 0x7fffffff;
+      return lcg / 0x7fffffff;
+    };
+
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 10; c++) {
+        // Skip locator zones
+        if (r < 3 && c < 3) continue;
+        if (r < 3 && c > 6) continue;
+        if (r > 6 && c < 3) continue;
+
+        if (nextRand() > 0.45) {
+          ctx.fillRect(x + c * p, y + r * p, p, p);
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  /**
    * Renders the profile picture frame preview on a canvas dynamically.
    */
   public static renderFramePreview(
@@ -86,7 +255,7 @@ export class PreviewRenderer {
     canvas.width = width;
     canvas.height = height;
 
-    // 1. Render template background (if defined)
+    // 1. Render template background
     if (template.renderBackground) {
       template.renderBackground(ctx, config);
     } else {
@@ -94,12 +263,22 @@ export class PreviewRenderer {
       ctx.fillRect(0, 0, width, height);
     }
 
-    // 2. Draw portrait photo centered inside the frame boundaries
+    // 2. Draw portrait photo (circular frame crop for Boarding Stamp template, square otherwise)
     const borderSize = (template.borderWidth || 36) * scale;
     const imageSizeW = width - borderSize * 2;
     const imageSizeH = height - borderSize * 2;
     
-    this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
+    ctx.save();
+    if (template.id === 'boarding-stamp') {
+      // Draw circular clip path in center
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, imageSizeW / 2, 0, Math.PI * 2);
+      ctx.clip();
+      this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
+    } else {
+      this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
+    }
+    ctx.restore();
 
     // 3. Render template frame overlay borders
     if (template.renderFrame) {
@@ -114,7 +293,6 @@ export class PreviewRenderer {
     if (template.renderOverlay) {
       template.renderOverlay(ctx, config);
     } else {
-      // Default overlay layout fallback
       ctx.fillStyle = template.colors.text;
       ctx.font = `bold ${Math.round(16 * scale)}px ${template.typography.heading}`;
       ctx.textAlign = 'left';
@@ -178,32 +356,49 @@ export class PreviewRenderer {
     ctx.textBaseline = 'alphabetic';
     
     // Draw top brand logo text if templates don't override the top area
-    if (template.id !== 'goa-jungle') {
+    if (template.id !== 'goa-boarding-pass') {
       ctx.fillText('HH GOA // 2026', width / 2, 70 * scale);
       ctx.fillStyle = template.colors.text;
       ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.body}`;
       ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
     }
 
-    // 4. Draw User Portrait with rounded corners (240x240 size at y=140 in base)
+    // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
     const portSize = 240 * scale;
     const portX = (width - portSize) / 2;
     const portY = 140 * scale;
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1 * scale;
-    ctx.strokeRect(portX - 1, portY - 1, portSize + 2, portSize + 2);
-
     ctx.save();
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(portX, portY, portSize, portSize, 20 * scale);
+    if (template.id === 'goa-boarding-pass') {
+      // Circular crop portrait matching boarding pass ticket templates
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.lineWidth = 2 * scale;
+      
+      // Draw outer gold circular backing frame
+      ctx.strokeStyle = '#ffd000';
+      ctx.beginPath();
+      ctx.arc(portX + portSize / 2, portY + portSize / 2, portSize / 2 + 3 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(portX + portSize / 2, portY + portSize / 2, portSize / 2, 0, Math.PI * 2);
+      ctx.clip();
+      this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
     } else {
-      ctx.rect(portX, portY, portSize, portSize);
+      // Rounded square portrait card clipping
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1 * scale;
+      ctx.strokeRect(portX - 1, portY - 1, portSize + 2, portSize + 2);
+
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(portX, portY, portSize, portSize, 20 * scale);
+      } else {
+        ctx.rect(portX, portY, portSize, portSize);
+      }
+      ctx.clip();
+      this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
     }
-    ctx.clip();
-    
-    this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
     ctx.restore();
 
     // 5. Draw Details
@@ -286,7 +481,11 @@ export class PreviewRenderer {
     
     ctx.fillStyle = template.colors.secondary;
     ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
-    ctx.fillText('ID: 247-PM-STU', width - 30 * scale, footerY + 45 * scale);
+    
+    // Draw ID card hash code if templates do not draw custom bottom layouts
+    if (template.id !== 'goa-boarding-pass' && template.id !== 'rarity-badge') {
+      ctx.fillText('ID: 247-PM-STU', width - 30 * scale, footerY + 45 * scale);
+    }
 
     // 8. Custom Overlays from the Template config
     if (template.renderOverlay) {

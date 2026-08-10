@@ -1,10 +1,11 @@
 import type { PFPTemplate } from './PFPTemplate';
+import { PreviewRenderer } from '../../canvas/PreviewRenderer';
 
 export const pfpTemplates: PFPTemplate[] = [
   {
     id: 'goa-palms',
     name: 'Goa Palms',
-    description: 'Deep forest green backdrop, sunflower yellow, and hot pink stamp overlays.',
+    description: 'Deep forest green backdrop, sunflower yellow margins, and hot pink stamp overlays.',
     previewColor: '#006c35',
     colors: {
       background: '#006c35',
@@ -21,11 +22,11 @@ export const pfpTemplates: PFPTemplate[] = [
     renderBackground(ctx, config) {
       const { width, height, scale } = config;
       
-      // Draw forest green solid background
+      // Draw forest green background
       ctx.fillStyle = '#006c35';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle sun rays in the background (Yellow lines emanating from top center)
+      // Sun rays
       ctx.strokeStyle = 'rgba(255, 208, 0, 0.04)';
       ctx.lineWidth = 4 * scale;
       const cX = width / 2;
@@ -43,19 +44,40 @@ export const pfpTemplates: PFPTemplate[] = [
       const borderSize = 36 * scale;
 
       ctx.fillStyle = '#006c35';
-      // Top
       ctx.fillRect(0, 0, width, borderSize);
-      // Bottom
       ctx.fillRect(0, height - borderSize, width, borderSize);
-      // Left
       ctx.fillRect(0, 0, borderSize, height);
-      // Right
       ctx.fillRect(width - borderSize, 0, borderSize, height);
 
-      // Inner yellow stroke line
+      // Yellow border outline
       ctx.strokeStyle = '#ffd000';
       ctx.lineWidth = 2 * scale;
       ctx.strokeRect(borderSize, borderSize, width - borderSize * 2, height - borderSize * 2);
+
+      // Drawing corner triangles to look like corner photo mounts
+      ctx.fillStyle = '#ffd000';
+      const mS = 12 * scale;
+      ctx.beginPath();
+      // Top Left
+      ctx.moveTo(borderSize, borderSize);
+      ctx.lineTo(borderSize + mS, borderSize);
+      ctx.lineTo(borderSize, borderSize + mS);
+      ctx.fill();
+      // Top Right
+      ctx.moveTo(width - borderSize, borderSize);
+      ctx.lineTo(width - borderSize - mS, borderSize);
+      ctx.lineTo(width - borderSize, borderSize + mS);
+      ctx.fill();
+      // Bottom Left
+      ctx.moveTo(borderSize, height - borderSize);
+      ctx.lineTo(borderSize + mS, height - borderSize);
+      ctx.lineTo(borderSize, height - borderSize - mS);
+      ctx.fill();
+      // Bottom Right
+      ctx.moveTo(width - borderSize, height - borderSize);
+      ctx.lineTo(width - borderSize - mS, height - borderSize);
+      ctx.lineTo(width - borderSize, height - borderSize - mS);
+      ctx.fill();
     },
     renderOverlay(ctx, config) {
       const { width, height, scale } = config;
@@ -88,20 +110,17 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.translate(stampX, stampY);
       ctx.rotate(-15 * Math.PI / 180);
 
-      // Stamp border
       ctx.strokeStyle = '#ff007f';
       ctx.lineWidth = 2 * scale;
       ctx.beginPath();
       ctx.arc(0, 0, stampRadius, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Inner circle border
       ctx.lineWidth = 1 * scale;
       ctx.beginPath();
       ctx.arc(0, 0, stampRadius - 4 * scale, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Devanagari Text
       ctx.fillStyle = '#ff007f';
       ctx.font = `bold ${Math.round(17 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
@@ -112,8 +131,94 @@ export const pfpTemplates: PFPTemplate[] = [
     },
   },
   {
-    id: 'builder-terminal',
-    name: 'Builder Terminal',
+    id: 'boarding-stamp',
+    name: 'Boarding Stamp',
+    description: 'Cream retro ticket backdrop, circular photo overlay, and postmark seals.',
+    previewColor: '#f4f1ea',
+    borderWidth: 40,
+    colors: {
+      background: '#f4f1ea',
+      primary: '#006c35',
+      secondary: '#ffd000',
+      accent: '#ff007f',
+      text: '#006c35',
+    },
+    typography: {
+      heading: '"DM Serif Display", Georgia, serif',
+      body: '"Space Grotesk", sans-serif',
+      mono: '"Fira Code", monospace',
+    },
+    renderBackground(ctx, config) {
+      const { width, height } = config;
+      // Retro cream paper texture
+      ctx.fillStyle = '#f4f1ea';
+      ctx.fillRect(0, 0, width, height);
+    },
+    renderFrame(ctx, config) {
+      const { width, height, scale } = config;
+      const borderSize = 40 * scale;
+
+      ctx.fillStyle = '#f4f1ea';
+      ctx.fillRect(0, 0, width, borderSize);
+      ctx.fillRect(0, height - borderSize, width, borderSize);
+      ctx.fillRect(0, 0, borderSize, height);
+      ctx.fillRect(width - borderSize, 0, borderSize, height);
+
+      // Dual border outlines
+      ctx.strokeStyle = '#006c35';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.strokeRect(borderSize - 4 * scale, borderSize - 4 * scale, width - (borderSize - 4 * scale) * 2, height - (borderSize - 4 * scale) * 2);
+      
+      ctx.strokeStyle = '#ffd000';
+      ctx.lineWidth = 1 * scale;
+      ctx.strokeRect(borderSize, borderSize, width - borderSize * 2, height - borderSize * 2);
+    },
+    renderOverlay(ctx, config) {
+      const { width, height, scale } = config;
+      const borderSize = 40 * scale;
+
+      // 1. Draw Circular Frame Border around clipped photo
+      ctx.strokeStyle = '#006c35';
+      ctx.lineWidth = 2 * scale;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, (width - borderSize * 2) / 2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner yellow highlight circle
+      ctx.strokeStyle = '#ffd000';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, (width - borderSize * 2) / 2 - 4 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 2. Draw Header
+      ctx.fillStyle = '#006c35';
+      ctx.font = `bold ${Math.round(18 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('HACKER HOUSE GOA', borderSize + 12 * scale, borderSize / 2);
+
+      ctx.fillStyle = '#6b7280';
+      ctx.font = `${Math.round(11 * scale)}px "Fira Code", monospace`;
+      ctx.textAlign = 'right';
+      ctx.fillText('28-31 OCT 2026', width - borderSize - 12 * scale, borderSize / 2);
+
+      // 3. Draw Footer
+      ctx.fillStyle = '#006c35';
+      ctx.font = `bold ${Math.round(12 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.fillText('BOARDING PASS PFP', borderSize + 12 * scale, height - borderSize / 2);
+
+      // 4. Draw Circular Postmark stamp: "SHIP FROM PARADISE" (retro green ink!)
+      const stampRadius = 30 * scale;
+      const stampX = width - borderSize - 55 * scale;
+      const stampY = height - borderSize - 25 * scale;
+      PreviewRenderer.drawPostmarkStamp(ctx, stampX, stampY, stampRadius, 'SHIP 2026', '#006c35', scale);
+    },
+  },
+  {
+    id: 'cyber-terminal',
+    name: 'Cyber Terminal',
     description: 'Technical gridlines with vibrant neon green accents and system metrics.',
     previewColor: '#10b981',
     colors: {
@@ -131,11 +236,11 @@ export const pfpTemplates: PFPTemplate[] = [
     renderBackground(ctx, config) {
       const { width, height, scale } = config;
       
-      // Black backdrop
+      // Black background
       ctx.fillStyle = '#040a06';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle terminal grid overlay
+      // Grid overlay
       ctx.strokeStyle = 'rgba(16, 185, 129, 0.03)';
       ctx.lineWidth = 1 * scale;
       const gridSize = 40 * scale;
@@ -156,13 +261,12 @@ export const pfpTemplates: PFPTemplate[] = [
       const borderSize = 36 * scale;
 
       ctx.fillStyle = '#040a06';
-      // Frame Borders
       ctx.fillRect(0, 0, width, borderSize);
       ctx.fillRect(0, height - borderSize, width, borderSize);
       ctx.fillRect(0, 0, borderSize, height);
       ctx.fillRect(width - borderSize, 0, borderSize, height);
 
-      // Inner outline
+      // Neon outline
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 1.5 * scale;
       ctx.strokeRect(borderSize, borderSize, width - borderSize * 2, height - borderSize * 2);
@@ -193,83 +297,6 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.font = `bold ${Math.round(12 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'right';
       ctx.fillText('TERMINAL_VERIFIED', width - borderSize - 16 * scale, height - borderSize / 2);
-    },
-  },
-  {
-    id: 'ocean-minimal',
-    name: 'Ocean Minimal',
-    description: 'Clean slate backdrop with ocean blue vector curves and thin lines.',
-    previewColor: '#0ea5e9',
-    colors: {
-      background: '#020617',
-      primary: '#0ea5e9',
-      secondary: '#1e293b',
-      accent: '#0ea5e9',
-      text: '#ffffff',
-    },
-    typography: {
-      heading: '"Space Grotesk", sans-serif',
-      body: '"Space Grotesk", sans-serif',
-      mono: '"Fira Code", monospace',
-    },
-    renderBackground(ctx, config) {
-      const { width, height, scale } = config;
-
-      // Dark blue background
-      ctx.fillStyle = '#020617';
-      ctx.fillRect(0, 0, width, height);
-
-      // Radial blue glow center bottom
-      const glow = ctx.createRadialGradient(width / 2, height, 10, width / 2, height, 300 * scale);
-      glow.addColorStop(0, 'rgba(14, 165, 233, 0.1)');
-      glow.addColorStop(1, 'rgba(14, 165, 233, 0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    },
-    renderFrame(ctx, config) {
-      const { width, height, scale } = config;
-      const borderSize = 36 * scale;
-
-      ctx.fillStyle = '#020617';
-      ctx.fillRect(0, 0, width, borderSize);
-      ctx.fillRect(0, height - borderSize, width, borderSize);
-      ctx.fillRect(0, 0, borderSize, height);
-      ctx.fillRect(width - borderSize, 0, borderSize, height);
-
-      // Thin outline
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 1 * scale;
-      ctx.strokeRect(borderSize, borderSize, width - borderSize * 2, height - borderSize * 2);
-      
-      // Bottom highlight blue line
-      ctx.strokeStyle = '#0ea5e9';
-      ctx.lineWidth = 2 * scale;
-      ctx.beginPath();
-      ctx.moveTo(borderSize, height - borderSize);
-      ctx.lineTo(width - borderSize, height - borderSize);
-      ctx.stroke();
-    },
-    renderOverlay(ctx, config) {
-      const { width, height, scale } = config;
-      const borderSize = 36 * scale;
-
-      // Header Texts
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.round(16 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('HH GOA', borderSize + 16 * scale, borderSize / 2);
-
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = `${Math.round(12 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'right';
-      ctx.fillText('2026 Selections', width - borderSize - 16 * scale, borderSize / 2);
-
-      // Footer
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = `${Math.round(12 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.fillText('Goa Beach Build Station', borderSize + 16 * scale, height - borderSize / 2);
     },
   },
 ];
