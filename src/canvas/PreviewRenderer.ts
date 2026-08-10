@@ -631,9 +631,9 @@ export class PreviewRenderer {
 
     // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
     const isBoardingPass = template.id === 'goa-boarding-pass';
-    const portSize = isBoardingPass ? 160 * scale : 240 * scale;
-    const portX = isBoardingPass ? 85 * scale : (width - portSize) / 2;
-    const portY = isBoardingPass ? 150 * scale : 140 * scale;
+    const portSize = isBoardingPass ? 180 * scale : 240 * scale;
+    const portX = isBoardingPass ? 75 * scale : (width - portSize) / 2;
+    const portY = isBoardingPass ? 190 * scale : 140 * scale;
 
     ctx.save();
     if (isBoardingPass) {
@@ -660,90 +660,91 @@ export class PreviewRenderer {
     ctx.restore();
 
     // 5. Draw Details
-    const textCenterX = isBoardingPass ? 165 * scale : width / 2;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = template.colors.text;
+    if (!isBoardingPass) {
+      const textCenterX = width / 2;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = template.colors.text;
 
-    // Name (with auto text wrapping/clipping to prevent overflow of long inputs)
-    const name = (data.name || 'YOUR NAME').toUpperCase();
-    ctx.font = `bold ${Math.round(24 * scale)}px ${template.typography.heading}`;
-    
-    // Safe text bounds check
-    const maxTextWidth = isBoardingPass ? 260 * scale : width - 80 * scale;
-    let nameFontW = isBoardingPass ? 18 : 24;
-    ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
-    while (ctx.measureText(name).width > maxTextWidth && nameFontW > 12) {
-      nameFontW -= 2;
+      // Name (with auto text wrapping/clipping to prevent overflow of long inputs)
+      const name = (data.name || 'YOUR NAME').toUpperCase();
+      ctx.font = `bold ${Math.round(24 * scale)}px ${template.typography.heading}`;
+      
+      // Safe text bounds check
+      const maxTextWidth = width - 80 * scale;
+      let nameFontW = 24;
       ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
-    }
-    ctx.fillText(name, textCenterX, 440 * scale);
+      while (ctx.measureText(name).width > maxTextWidth && nameFontW > 14) {
+        nameFontW -= 2;
+        ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
+      }
+      ctx.fillText(name, textCenterX, 440 * scale);
 
-    // Role
-    const role = (data.role || 'STACK / ROLE').toUpperCase();
-    ctx.fillStyle = template.colors.secondary;
-    ctx.font = `${Math.round(13 * scale)}px ${template.typography.mono}`;
-    
-    // Role font resizing bounds check
-    let roleFontW = 13;
-    while (ctx.measureText(role).width > maxTextWidth && roleFontW > 9) {
-      roleFontW -= 1;
-      ctx.font = `${Math.round(roleFontW * scale)}px ${template.typography.mono}`;
-    }
-    ctx.fillText(role, textCenterX, 475 * scale);
+      // Role
+      const role = (data.role || 'STACK / ROLE').toUpperCase();
+      ctx.fillStyle = template.colors.secondary;
+      ctx.font = `${Math.round(13 * scale)}px ${template.typography.mono}`;
+      
+      // Role font resizing bounds check
+      let roleFontW = 13;
+      while (ctx.measureText(role).width > maxTextWidth && roleFontW > 9) {
+        roleFontW -= 1;
+        ctx.font = `${Math.round(roleFontW * scale)}px ${template.typography.mono}`;
+      }
+      ctx.fillText(role, textCenterX, 475 * scale);
 
-    // 6. Title Badge (Wizard etc. at y=515 in base)
-    const title = (data.title || 'BUILDER').toUpperCase();
-    ctx.fillStyle = template.colors.badgeBg;
-    ctx.strokeStyle = template.colors.badgeText;
-    ctx.lineWidth = 1 * scale;
-    
-    ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.mono}`;
-    const textWidth = ctx.measureText(title).width;
-    const badgeW = textWidth + 30 * scale;
-    const badgeH = 26 * scale;
-    const badgeX = textCenterX - badgeW / 2;
-    const badgeY = 515 * scale;
+      // 6. Title Badge (Wizard etc. at y=515 in base)
+      const title = (data.title || 'BUILDER').toUpperCase();
+      ctx.fillStyle = template.colors.badgeBg;
+      ctx.strokeStyle = template.colors.badgeText;
+      ctx.lineWidth = 1 * scale;
+      
+      ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.mono}`;
+      const textWidth = ctx.measureText(title).width;
+      const badgeW = textWidth + 30 * scale;
+      const badgeH = 26 * scale;
+      const badgeX = textCenterX - badgeW / 2;
+      const badgeY = 515 * scale;
 
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 999);
-    } else {
-      ctx.rect(badgeX, badgeY, badgeW, badgeH);
-    }
-    ctx.fill();
-    ctx.stroke();
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 999);
+      } else {
+        ctx.rect(badgeX, badgeY, badgeW, badgeH);
+      }
+      ctx.fill();
+      ctx.stroke();
 
-    ctx.fillStyle = template.colors.badgeText;
-    ctx.fillText(title, textCenterX, badgeY + 17 * scale);
+      ctx.fillStyle = template.colors.badgeText;
+      ctx.fillText(title, textCenterX, badgeY + 17 * scale);
 
-    // 7. Footer Divider Line (y=660 in base)
-    const footerY = 660 * scale;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1 * scale;
-    ctx.beginPath();
-    ctx.moveTo(30 * scale, footerY);
-    ctx.lineTo(width - 30 * scale, footerY);
-    ctx.stroke();
+      // 7. Footer Divider Line (y=660 in base)
+      const footerY = 660 * scale;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      ctx.moveTo(30 * scale, footerY);
+      ctx.lineTo(width - 30 * scale, footerY);
+      ctx.stroke();
 
-    // Footer Text Details
-    ctx.fillStyle = template.colors.secondary;
-    ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
-    
-    ctx.textAlign = 'left';
-    ctx.fillText('STATION: GOA_SAND', 30 * scale, footerY + 25 * scale);
-    ctx.fillText('DATE: 28-31_OCT_2026', 30 * scale, footerY + 45 * scale);
+      // Footer Text Details
+      ctx.fillStyle = template.colors.secondary;
+      ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
+      
+      ctx.textAlign = 'left';
+      ctx.fillText('STATION: GOA_SAND', 30 * scale, footerY + 25 * scale);
+      ctx.fillText('DATE: 28-31_OCT_2026', 30 * scale, footerY + 45 * scale);
 
-    ctx.textAlign = 'right';
-    ctx.fillStyle = template.colors.accent;
-    ctx.font = `bold ${Math.round(10 * scale)}px ${template.typography.mono}`;
-    ctx.fillText('VERIFIED_BUILDER', width - 30 * scale, footerY + 25 * scale);
-    
-    ctx.fillStyle = template.colors.secondary;
-    ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
-    
-    // Draw ID card hash code if templates do not draw custom bottom layouts
-    if (template.id !== 'goa-boarding-pass' && template.id !== 'rarity-badge') {
-      ctx.fillText('ID: 247-PM-STU', width - 30 * scale, footerY + 45 * scale);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = template.colors.accent;
+      ctx.font = `bold ${Math.round(10 * scale)}px ${template.typography.mono}`;
+      ctx.fillText('VERIFIED_BUILDER', width - 30 * scale, footerY + 25 * scale);
+      
+      ctx.fillStyle = template.colors.secondary;
+      ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
+      
+      if (template.id !== 'rarity-badge') {
+        ctx.fillText('ID: 247-PM-STU', width - 30 * scale, footerY + 45 * scale);
+      }
     }
 
     // 8. Custom Overlays from the Template config
