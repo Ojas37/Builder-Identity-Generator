@@ -8,9 +8,9 @@ export const BuilderPreview: React.FC = () => {
   const { previewUrl, isProcessing, error } = useImageTransform();
 
   return (
-    <div className="relative w-full max-w-[280px] aspect-[1/1.58] rounded-[24px] overflow-hidden border border-white/10 shadow-2xl bg-neutral-950 flex items-center justify-center p-4">
+    <div className="relative w-full max-w-[360px] aspect-[1/1.58] rounded-[24px] overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,108,53,0.15)] bg-neutral-950 flex items-center justify-center p-4 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,108,53,0.25)] hover:border-accent-green/30">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-radial-gradient from-accent-green/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-gradient from-accent-green/10 to-transparent pointer-events-none" />
 
       {uploadedImage ? (
         <div className="relative w-full h-full flex items-center justify-center">

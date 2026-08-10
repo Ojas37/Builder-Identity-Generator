@@ -8,9 +8,9 @@ export const FramePreview: React.FC = () => {
   const { previewUrl, isProcessing, error } = useImageTransform();
 
   return (
-    <div className="relative w-full aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-neutral-950 flex items-center justify-center">
+    <div className="relative w-full max-w-[360px] aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(14,165,233,0.15)] bg-neutral-950 flex items-center justify-center p-4 transition-all duration-300 hover:shadow-[0_20px_50px_rgba(14,165,233,0.25)] hover:border-accent-blue/30">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-radial-gradient from-accent-blue/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-gradient from-accent-blue/10 to-transparent pointer-events-none" />
 
       {uploadedImage ? (
         <div className="relative w-full h-full flex items-center justify-center p-4">
