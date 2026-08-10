@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGenerator } from '../context/GeneratorContext';
-import { getCroppedImgCanvas } from '../utils/crop';
 import { PreviewRenderer } from '../canvas/PreviewRenderer';
+import { createImage } from '../utils/image';
+import type { RenderConfig } from '../export/exportTypes';
 
 export function useImageTransform() {
   const {
@@ -33,31 +34,61 @@ export function useImageTransform() {
       setIsProcessing(true);
       setError(null);
       try {
-        // 1. Get cropped image canvas
-        const croppedCanvas = await getCroppedImgCanvas(
-          uploadedImage,
-          croppedAreaPixels,
-          rotation
-        );
+        // 1. Load the original image once
+        const image = await createImage(uploadedImage);
 
         if (!active) return;
 
-        // 2. Process through renderer based on current preview mode
-        let finalCanvas: HTMLCanvasElement;
+        // 2. Setup rendering configuration for preview resolution (scale = 1.0)
+        let finalWidth: number;
+        let finalHeight: number;
+        
         if (previewMode === 'frame') {
-          finalCanvas = PreviewRenderer.renderFramePreview(croppedCanvas, selectedFrame);
+          finalWidth = 800;
+          finalHeight = 800;
         } else {
-          finalCanvas = PreviewRenderer.renderBuilderPreview(croppedCanvas, {
-            name: builderData.name,
-            role: builderData.role,
-            title: generatedTitle,
-          });
+          finalWidth = 500;
+          finalHeight = 790;
+        }
+
+        const config: RenderConfig = {
+          width: finalWidth,
+          height: finalHeight,
+          scale: 1.0,
+        };
+
+        // Create canvas for drawing
+        const canvas = document.createElement('canvas');
+
+        // 3. Render directly using the PreviewRenderer
+        if (previewMode === 'frame') {
+          PreviewRenderer.renderFramePreview(
+            canvas,
+            image,
+            croppedAreaPixels,
+            rotation,
+            selectedFrame,
+            config
+          );
+        } else {
+          PreviewRenderer.renderBuilderPreview(
+            canvas,
+            image,
+            croppedAreaPixels,
+            rotation,
+            {
+              name: builderData.name,
+              role: builderData.role,
+              title: generatedTitle,
+            },
+            config
+          );
         }
 
         if (!active) return;
 
-        // 3. Convert to Blob URL
-        finalCanvas.toBlob((blob) => {
+        // 4. Convert canvas to Blob URL
+        canvas.toBlob((blob) => {
           if (!blob || !active) return;
           
           const newUrl = URL.createObjectURL(blob);
@@ -70,6 +101,10 @@ export function useImageTransform() {
           prevUrlRef.current = newUrl;
           setPreviewUrl(newUrl);
           setIsProcessing(false);
+
+          // Force release canvas memory
+          canvas.width = 0;
+          canvas.height = 0;
         }, 'image/png');
 
       } catch (err) {
@@ -83,7 +118,7 @@ export function useImageTransform() {
     // Debounce preview rendering slightly during fast slider edits/drags to ensure buttery smoothness
     const timer = setTimeout(() => {
       generatePreview();
-    }, 40);
+    }, 45);
 
     return () => {
       active = false;

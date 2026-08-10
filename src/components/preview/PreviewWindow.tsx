@@ -4,7 +4,8 @@ import { BuilderPreview } from './BuilderPreview';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { FiDownload, FiTwitter } from 'react-icons/fi';
+import { DownloadButton } from '../ui/DownloadButton';
+import { FiTwitter } from 'react-icons/fi';
 
 interface PreviewWindowProps {
   type: 'frame' | 'builder';
@@ -21,7 +22,7 @@ export const PreviewWindow: React.FC<PreviewWindowProps> = ({ type }) => {
             Preview Render
           </h4>
         </div>
-        <Badge variant="blue">Phase 1 Layout</Badge>
+        <Badge variant="blue">Phase 3 Export</Badge>
       </div>
 
       {/* Render Area */}
@@ -29,22 +30,9 @@ export const PreviewWindow: React.FC<PreviewWindowProps> = ({ type }) => {
         {type === 'frame' ? <FramePreview /> : <BuilderPreview />}
       </div>
 
-      {/* Actions Placeholder */}
+      {/* Actions */}
       <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-grow">
-          <Button
-            variant="secondary"
-            fullWidth
-            disabled
-            className="gap-2 cursor-not-allowed opacity-50 text-neutral-500 border-white/5"
-          >
-            <FiDownload size={14} />
-            Download PNG
-          </Button>
-          <span className="absolute -top-2.5 right-2 text-[7px] font-mono bg-neutral-900 border border-white/5 px-1 py-0.5 rounded text-neutral-500 uppercase tracking-widest">
-            Phase 2
-          </span>
-        </div>
+        <DownloadButton mode={type} />
 
         <div className="relative flex-grow">
           <Button
@@ -57,7 +45,7 @@ export const PreviewWindow: React.FC<PreviewWindowProps> = ({ type }) => {
             Share to X
           </Button>
           <span className="absolute -top-2.5 right-2 text-[7px] font-mono bg-neutral-900 border border-white/5 px-1 py-0.5 rounded text-neutral-500 uppercase tracking-widest">
-            Phase 2
+            Phase 5
           </span>
         </div>
       </div>
