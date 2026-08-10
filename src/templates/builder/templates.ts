@@ -44,7 +44,7 @@ export const builderTemplates: BuilderTemplate[] = [
     renderBackground(ctx, config) {
       const { width, height, scale } = config;
 
-      // Draw cream card base background (full card height!)
+      // Draw cream card base background (full card height)
       ctx.fillStyle = '#f4f1ea';
       ctx.fillRect(10 * scale, 10 * scale, width - 20 * scale, height - 20 * scale);
 
@@ -65,19 +65,7 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.arc(330 * scale, height, 10 * scale, 0, Math.PI * 2);
       ctx.fill();
 
-      // Draw beach coconut palm trees in the bottom-left stub (taller to fill vertical space!)
-      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 55 * scale, 110 * scale, scale, '#006c35');
-      
-      // Draw sandy patch hill at the bottom left
-      ctx.fillStyle = 'rgba(0, 108, 53, 0.08)';
-      ctx.beginPath();
-      ctx.ellipse(80 * scale, height - 55 * scale, 60 * scale, 12 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw retro beach hut scenery in the bottom-left stub (shifted up to fill space!)
-      PreviewRenderer.drawBeachHut(ctx, 95 * scale, height - 105 * scale, 1.35 * scale);
-
-      // Outer thin ticket border (full card height!)
+      // Outer thin ticket border (full card height)
       ctx.strokeStyle = '#006c35';
       ctx.lineWidth = 1.5 * scale;
       ctx.strokeRect(10 * scale, 10 * scale, width - 20 * scale, height - 20 * scale);
@@ -97,8 +85,7 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.font = `bold ${Math.round(15 * scale)}px "Space Grotesk", sans-serif`;
       ctx.fillText('गोवा', 240 * scale, 65 * scale);
 
-      // 2. Draw golden scalloped floral border around circular photo frame (radius 100px for larger photo!)
-      // Center of left stub: cx = 165 * scale. cy = 270 * scale. radius = 100 * scale.
+      // 2. Draw golden scalloped floral border around circular photo frame
       PreviewRenderer.drawScallopedBorder(ctx, 165 * scale, 270 * scale, 100 * scale, scale);
 
       // 3. Draw Yellow/White Title Badge under the circular portrait
@@ -128,15 +115,82 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.textBaseline = 'middle';
       ctx.fillText(badgeText, 165 * scale, bY + 13 * scale);
 
-      // 4. Draw bottom-left credentials text next to palm tree
+      // 4. Fill the blank space in the middle stub with stacked 'BUILD', 'SHIP', 'REPEAT' buttons & beach hut scenery
+      // Vertical stacked banners (left-middle of left stub)
+      const tabX = 50 * scale;
+      ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // 'BUILD' Tab (Green)
+      ctx.fillStyle = '#006c35';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(tabX, 445 * scale, 65 * scale, 20 * scale, 4 * scale);
+      } else {
+        ctx.rect(tabX, 445 * scale, 65 * scale, 20 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('BUILD', tabX + 32.5 * scale, 455 * scale);
+
+      // 'SHIP' Tab (Pink)
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(tabX, 475 * scale, 65 * scale, 20 * scale, 4 * scale);
+      } else {
+        ctx.rect(tabX, 475 * scale, 65 * scale, 20 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('SHIP', tabX + 32.5 * scale, 485 * scale);
+
+      // 'REPEAT' Tab (Yellow)
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(tabX, 505 * scale, 65 * scale, 20 * scale, 4 * scale);
+      } else {
+        ctx.rect(tabX, 505 * scale, 65 * scale, 20 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#006c35';
+      ctx.fillText('REPEAT', tabX + 32.5 * scale, 515 * scale);
+
+      // Beach Hut Scenery (right-middle of left stub)
+      ctx.fillStyle = 'rgba(0, 108, 53, 0.04)';
+      ctx.beginPath();
+      ctx.ellipse(220 * scale, 510 * scale, 55 * scale, 15 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Beach Hut
+      PreviewRenderer.drawBeachHut(ctx, 185 * scale, 460 * scale, 1.25 * scale);
+
+      // Palm Tree behind Beach Hut
+      PreviewRenderer.drawPalmTree(ctx, 255 * scale, 510 * scale, 85 * scale, scale, '#006c35');
+
+      // 5. Draw Hacker House Slogan centered underneath the scenery
+      ctx.fillStyle = '#006c35';
+      ctx.font = `italic bold ${Math.round(13 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('LESS NOISE. MORE SIGNAL.', 165 * scale, 570 * scale);
+
+      // 6. Bottom Palm Tree and Credentials footer
+      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 55 * scale, 75 * scale, scale, '#006c35');
+      ctx.fillStyle = 'rgba(0, 108, 53, 0.08)';
+      ctx.beginPath();
+      ctx.ellipse(80 * scale, height - 55 * scale, 60 * scale, 12 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#006c35';
       ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
       ctx.fillText('STATION: GOA_SAND', 145 * scale, height - 70 * scale);
       ctx.fillText('DATE: 28-31 OCT, 2026', 145 * scale, height - 52 * scale);
 
-      // 5. Draw vertical meta banner along the left side
+      // 7. Draw vertical meta banner along the left side
       ctx.save();
       ctx.translate(25 * scale, height / 2);
       ctx.rotate(-Math.PI / 2);
