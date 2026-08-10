@@ -3,9 +3,8 @@ import { FramePreview } from './FramePreview';
 import { BuilderPreview } from './BuilderPreview';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
 import { DownloadButton } from '../ui/DownloadButton';
-import { FiTwitter } from 'react-icons/fi';
+import { ShareToXButton } from '../ui/ShareToXButton';
 
 interface PreviewWindowProps {
   type: 'frame' | 'builder';
@@ -34,20 +33,7 @@ export const PreviewWindow: React.FC<PreviewWindowProps> = ({ type }) => {
       <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row gap-3">
         <DownloadButton mode={type} />
 
-        <div className="relative flex-grow">
-          <Button
-            variant="secondary"
-            fullWidth
-            disabled
-            className="gap-2 cursor-not-allowed opacity-50 text-neutral-500 border-white/5"
-          >
-            <FiTwitter size={14} />
-            Share to X
-          </Button>
-          <span className="absolute -top-2.5 right-2 text-[7px] font-mono bg-neutral-900 border border-white/5 px-1 py-0.5 rounded text-neutral-500 uppercase tracking-widest">
-            Phase 5
-          </span>
-        </div>
+        <ShareToXButton mode={type} />
       </div>
     </Card>
   );
