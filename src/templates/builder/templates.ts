@@ -44,67 +44,59 @@ export const builderTemplates: BuilderTemplate[] = [
     renderBackground(ctx, config) {
       const { width, scale } = config;
 
-      // Card bounds condensed to 520px height, centered vertically (y=135px to y=655px)
-      const ticketY = 135 * scale;
-      const ticketH = 520 * scale;
-
-      // Draw cream card base background inside the ticket bounds
+      // Draw cream card base background only inside the ticket bounds (height 510px, y=140px to y=650px)
       ctx.fillStyle = '#f4f1ea';
-      ctx.fillRect(10 * scale, ticketY, width - 20 * scale, ticketH);
+      ctx.fillRect(10 * scale, 140 * scale, width - 20 * scale, 510 * scale);
 
-      // Perforated tear-off stub divider line (dotted) from y = 155 to 635
+      // Perforated tear-off stub divider line (dotted) from y = 160 to 630
       ctx.strokeStyle = '#006c35';
       ctx.lineWidth = 2 * scale;
       ctx.setLineDash([4 * scale, 4 * scale]);
       ctx.beginPath();
-      ctx.moveTo(330 * scale, ticketY + 20 * scale);
-      ctx.lineTo(330 * scale, ticketY + ticketH - 20 * scale);
+      ctx.moveTo(330 * scale, 160 * scale);
+      ctx.lineTo(330 * scale, 630 * scale);
       ctx.stroke();
       ctx.setLineDash([]); // Reset dash settings
 
       // Draw top and bottom punch hole circles cut out from the card
       ctx.fillStyle = '#030712'; // Matches outer body canvas backdrop
       ctx.beginPath();
-      ctx.arc(330 * scale, ticketY, 10 * scale, 0, Math.PI * 2);
-      ctx.arc(330 * scale, ticketY + ticketH, 10 * scale, 0, Math.PI * 2);
+      ctx.arc(330 * scale, 140 * scale, 10 * scale, 0, Math.PI * 2);
+      ctx.arc(330 * scale, 650 * scale, 10 * scale, 0, Math.PI * 2);
       ctx.fill();
 
       // Draw beach coconut palm trees in the bottom-left stub
-      PreviewRenderer.drawPalmTree(ctx, 40 * scale, ticketY + ticketH - 30 * scale, 65 * scale, scale, '#006c35');
+      PreviewRenderer.drawPalmTree(ctx, 40 * scale, 620 * scale, 70 * scale, scale, '#006c35');
       
       // Draw sandy patch hill at the bottom left
       ctx.fillStyle = 'rgba(0, 108, 53, 0.08)';
       ctx.beginPath();
-      ctx.ellipse(80 * scale, ticketY + ticketH - 30 * scale, 60 * scale, 10 * scale, 0, 0, Math.PI * 2);
+      ctx.ellipse(80 * scale, 620 * scale, 60 * scale, 12 * scale, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Outer thin ticket border
       ctx.strokeStyle = '#006c35';
       ctx.lineWidth = 1.5 * scale;
-      ctx.strokeRect(10 * scale, ticketY, width - 20 * scale, ticketH);
+      ctx.strokeRect(10 * scale, 140 * scale, width - 20 * scale, 510 * scale);
     },
     renderOverlay(ctx, config, data) {
       const { scale } = config;
-
-      // Card bounds condensed to 520px height, centered vertically (y=135px to y=655px)
-      const ticketY = 135 * scale;
-      const ticketH = 520 * scale;
 
       // 1. Draw top brand logo header inside the left section
       ctx.fillStyle = '#006c35';
       ctx.font = `bold ${Math.round(18 * scale)}px "DM Serif Display", Georgia, serif`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.fillText('HACKER HOUSE GOA', 30 * scale, (ticketY + 35) * scale);
+      ctx.fillText('HACKER HOUSE GOA', 30 * scale, 175 * scale);
 
       // Draw Devanagari stamp next to header
       ctx.fillStyle = '#ff007f';
       ctx.font = `bold ${Math.round(15 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('गोवा', 240 * scale, (ticketY + 35) * scale);
+      ctx.fillText('गोवा', 240 * scale, 175 * scale);
 
       // 2. Draw golden scalloped floral border around circular photo frame
-      // Center of left stub: cx = 165 * scale. cy = 280 * scale. radius = 90 * scale.
-      PreviewRenderer.drawScallopedBorder(ctx, 165 * scale, 280 * scale, 90 * scale, scale);
+      // Center of left stub: cx = 165 * scale. cy = 315 * scale. radius = 75 * scale (matches portSize 150 / 2).
+      PreviewRenderer.drawScallopedBorder(ctx, 165 * scale, 315 * scale, 75 * scale, scale);
 
       // 3. Draw Yellow/White Title Badge under the circular portrait
       const badgeText = (data.title || 'BUILDER').toUpperCase();
@@ -117,7 +109,7 @@ export const builderTemplates: BuilderTemplate[] = [
       const bW = tw + 24 * scale;
       const bH = 24 * scale;
       const bX = 165 * scale - bW / 2;
-      const bY = 385 * scale; // Placed exactly below circle bottom (370px)
+      const bY = 415 * scale;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
@@ -138,12 +130,12 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.fillText('STATION: GOA_SAND', 130 * scale, (ticketY + ticketH - 70) * scale);
-      ctx.fillText('DATE: 28-31 OCT, 2026', 130 * scale, (ticketY + ticketH - 52) * scale);
+      ctx.fillText('STATION: GOA_SAND', 130 * scale, 575 * scale);
+      ctx.fillText('DATE: 28-31 OCT, 2026', 130 * scale, 593 * scale);
 
       // 5. Draw vertical meta banner along the left side
       ctx.save();
-      ctx.translate(25 * scale, (ticketY + ticketH / 2)); // Centered inside the 520px ticket bounds
+      ctx.translate(25 * scale, 395 * scale); // Centered inside the ticket bounds
       ctx.rotate(-Math.PI / 2);
       ctx.fillStyle = 'rgba(0, 108, 53, 0.4)';
       ctx.font = `500 ${Math.round(9 * scale)}px "Fira Code", monospace`;
@@ -151,16 +143,19 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.fillText('28 - 31 OCT 2026 // BUILDER PASS', 0, 0);
       ctx.restore();
 
+      // 6. Draw postage stamp in the top right of the left stub
+      PreviewRenderer.drawPerforatedStamp(ctx, 245 * scale, 150 * scale, 65 * scale, 80 * scale, scale, '#f4f1ea');
+
       // Perforated stub (right side layout): Event flight information
       const stubX = 350 * scale;
       
       // Section titles
       ctx.fillStyle = '#006c35';
       ctx.font = `bold ${Math.round(9 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('PASSENGER', stubX, (ticketY + 45) * scale);
-      ctx.fillText('FLIGHT ID', stubX, (ticketY + 95) * scale);
-      ctx.fillText('GATE', stubX, (ticketY + 145) * scale);
-      ctx.fillText('SEAT CLASS', stubX, (ticketY + 195) * scale);
+      ctx.fillText('PASSENGER', stubX, 180 * scale);
+      ctx.fillText('FLIGHT ID', stubX, 238 * scale);
+      ctx.fillText('GATE', stubX, 296 * scale);
+      ctx.fillText('SEAT CLASS', stubX, 354 * scale);
 
       // Section data values
       ctx.fillStyle = '#1e293b';
@@ -173,11 +168,11 @@ export const builderTemplates: BuilderTemplate[] = [
         passengerFont -= 1;
         ctx.font = `bold ${Math.round(passengerFont * scale)}px "Fira Code", monospace`;
       }
-      ctx.fillText(splitName, stubX, (ticketY + 62) * scale);
+      ctx.fillText(splitName, stubX, 198 * scale);
       
       ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
-      ctx.fillText('HH-2026', stubX, (ticketY + 112) * scale);
-      ctx.fillText('GOA_SAND', stubX, (ticketY + 162) * scale);
+      ctx.fillText('HH-2026', stubX, 256 * scale);
+      ctx.fillText('GOA_SAND', stubX, 314 * scale);
       
       const splitTitle = (data.title || 'BUILDER').trim().toUpperCase();
       let titleFont = 11;
@@ -186,18 +181,18 @@ export const builderTemplates: BuilderTemplate[] = [
         titleFont -= 1;
         ctx.font = `bold ${Math.round(titleFont * scale)}px "Fira Code", monospace`;
       }
-      ctx.fillText(splitTitle, stubX, (ticketY + 212) * scale);
+      ctx.fillText(splitTitle, stubX, 372 * scale);
 
       // Mock QR code inside the right stub
       const qrSize = 90 * scale;
       const qrX = stubX;
-      const qrY = (ticketY + 240) * scale;
+      const qrY = 415 * scale;
       PreviewRenderer.drawQRCode(ctx, qrX, qrY, qrSize, '#006c35');
 
       // Barcode on the right stub footer
       const barcodeX = stubX;
-      const barcodeY = (ticketY + ticketH - 75) * scale;
-      const barcodeH = 30 * scale;
+      const barcodeY = 535 * scale;
+      const barcodeH = 35 * scale;
       
       ctx.fillStyle = '#006c35';
       let currentX = barcodeX;
@@ -212,7 +207,7 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.fillStyle = '#ff007f';
       ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'center';
-      ctx.fillText('ID_BUILDER', stubX + (qrSize / 2), barcodeY + barcodeH + 12 * scale);
+      ctx.fillText('ID_BUILDER', stubX + (qrSize / 2), 595 * scale);
     },
   },
   {
@@ -365,7 +360,6 @@ export const builderTemplates: BuilderTemplate[] = [
       ctx.arc(width / 2, height + 100 * scale, 400 * scale, Math.PI, 0);
       ctx.stroke();
 
-      // Waves lines
       ctx.beginPath();
       ctx.arc(width / 2, height + 100 * scale, 500 * scale, Math.PI, 0);
       ctx.stroke();

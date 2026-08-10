@@ -631,9 +631,9 @@ export class PreviewRenderer {
 
     // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
     const isBoardingPass = template.id === 'goa-boarding-pass';
-    const portSize = isBoardingPass ? 180 * scale : 240 * scale;
-    const portX = isBoardingPass ? 75 * scale : (width - portSize) / 2;
-    const portY = isBoardingPass ? 190 * scale : 140 * scale;
+    const portSize = isBoardingPass ? 150 * scale : 240 * scale;
+    const portX = isBoardingPass ? 90 * scale : (width - portSize) / 2;
+    const portY = isBoardingPass ? 240 * scale : 140 * scale;
 
     ctx.save();
     if (isBoardingPass) {
