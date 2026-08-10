@@ -1,5 +1,7 @@
 import type { Area } from '../context/GeneratorContext';
 import type { RenderConfig } from '../export/exportTypes';
+import type { PFPTemplate } from '../templates/pfp/PFPTemplate';
+import type { BuilderTemplate } from '../templates/builder/BuilderTemplate';
 
 export class PreviewRenderer {
   /**
@@ -15,13 +17,11 @@ export class PreviewRenderer {
     destW: number,
     destH: number
   ): void {
-    // If no crop coordinates are provided, draw the original image centered and fitted
     if (!crop) {
       ctx.drawImage(image, destX, destY, destW, destH);
       return;
     }
 
-    // Create a temporary canvas matching crop pixel size
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = crop.width;
     tempCanvas.height = crop.height;
@@ -32,8 +32,6 @@ export class PreviewRenderer {
     }
 
     const rotRad = (rotation * Math.PI) / 180;
-    
-    // Bounding box size of the rotated image
     const bBoxWidth =
       Math.abs(Math.cos(rotRad) * image.width) +
       Math.abs(Math.sin(rotRad) * image.height);
@@ -41,7 +39,6 @@ export class PreviewRenderer {
       Math.abs(Math.sin(rotRad) * image.width) +
       Math.abs(Math.cos(rotRad) * image.height);
 
-    // Create intermediate rotated canvas
     const rotCanvas = document.createElement('canvas');
     rotCanvas.width = bBoxWidth;
     rotCanvas.height = bBoxHeight;
@@ -51,13 +48,11 @@ export class PreviewRenderer {
       return;
     }
 
-    // Draw rotated image centered on intermediate canvas
     rotCtx.translate(bBoxWidth / 2, bBoxHeight / 2);
     rotCtx.rotate(rotRad);
     rotCtx.translate(-image.width / 2, -image.height / 2);
     rotCtx.drawImage(image, 0, 0);
 
-    // Extract the cropped portion from the rotated canvas onto the temp canvas
     tempCtx.drawImage(
       rotCanvas,
       crop.x,
@@ -70,19 +65,18 @@ export class PreviewRenderer {
       crop.height
     );
 
-    // Draw the temp canvas onto the final canvas context
     ctx.drawImage(tempCanvas, destX, destY, destW, destH);
   }
 
   /**
-   * Renders the profile picture frame preview on a canvas dynamically based on configuration.
+   * Renders the profile picture frame preview on a canvas dynamically.
    */
   public static renderFramePreview(
     canvas: HTMLCanvasElement,
     image: HTMLImageElement,
     crop: Area | null,
     rotation: number,
-    _frameId: string | null,
+    template: PFPTemplate,
     config: RenderConfig
   ): void {
     const ctx = canvas.getContext('2d');
@@ -92,66 +86,45 @@ export class PreviewRenderer {
     canvas.width = width;
     canvas.height = height;
 
-    // 1. Draw the cropped photo covering the entire canvas (except borders)
-    this.drawCroppedImage(ctx, image, crop, rotation, 0, 0, width, height);
+    // 1. Render template background (if defined)
+    if (template.renderBackground) {
+      template.renderBackground(ctx, config);
+    } else {
+      ctx.fillStyle = template.colors.background;
+      ctx.fillRect(0, 0, width, height);
+    }
 
-    // 2. Draw placeholder frame overlay scaled from base coordinate system (800x800 base)
-    const baseBorder = 36;
-    const borderSize = baseBorder * scale;
-
-    ctx.fillStyle = '#0b0f19'; // Deep dark card color (surface)
+    // 2. Draw portrait photo centered inside the frame boundaries
+    const borderSize = (template.borderWidth || 36) * scale;
+    const imageSizeW = width - borderSize * 2;
+    const imageSizeH = height - borderSize * 2;
     
-    // Draw outer borders
-    ctx.fillRect(0, 0, width, borderSize); // Top
-    ctx.fillRect(0, height - borderSize, width, borderSize); // Bottom
-    ctx.fillRect(0, 0, borderSize, height); // Left
-    ctx.fillRect(width - borderSize, 0, borderSize, height); // Right
+    this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
 
-    // Draw a subtle border outline
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1 * scale;
-    ctx.strokeRect(borderSize, borderSize, width - borderSize * 2, height - borderSize * 2);
+    // 3. Render template frame overlay borders
+    if (template.renderFrame) {
+      template.renderFrame(ctx, config);
+    } else {
+      ctx.strokeStyle = template.colors.borderColor || template.colors.primary;
+      ctx.lineWidth = borderSize;
+      ctx.strokeRect(borderSize / 2, borderSize / 2, width - borderSize, height - borderSize);
+    }
 
-    // Glow accents
-    ctx.strokeStyle = '#0ea5e9'; // Ocean blue
-    ctx.lineWidth = 2 * scale;
-    ctx.beginPath();
-    ctx.moveTo(borderSize, borderSize);
-    ctx.lineTo(width - borderSize, borderSize);
-    ctx.stroke();
-
-    ctx.strokeStyle = '#10b981'; // Neon green
-    ctx.lineWidth = 2 * scale;
-    ctx.beginPath();
-    ctx.moveTo(borderSize, height - borderSize);
-    ctx.lineTo(width - borderSize, height - borderSize);
-    ctx.stroke();
-
-    // 3. Draw branding texts
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `bold ${Math.round(16 * scale)}px "Space Grotesk", sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('HH GOA // 2026', borderSize + 16 * scale, borderSize / 2);
-
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `${Math.round(14 * scale)}px "Fira Code", monospace`;
-    ctx.textAlign = 'right';
-    ctx.fillText('28 - 31 OCT', width - borderSize - 16 * scale, borderSize / 2);
-
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText('BUILDER STATION', borderSize + 16 * scale, height - borderSize / 2);
-
-    ctx.fillStyle = '#10b981';
-    ctx.font = `bold ${Math.round(14 * scale)}px "Fira Code", monospace`;
-    ctx.textAlign = 'right';
-    ctx.fillText('SHIP OR SHIP', width - borderSize - 16 * scale, height - borderSize / 2);
+    // 4. Render custom overlays (text, stamps, logos)
+    if (template.renderOverlay) {
+      template.renderOverlay(ctx, config);
+    } else {
+      // Default overlay layout fallback
+      ctx.fillStyle = template.colors.text;
+      ctx.font = `bold ${Math.round(16 * scale)}px ${template.typography.heading}`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('HH GOA', borderSize + 16 * scale, borderSize / 2);
+    }
   }
 
   /**
-   * Renders the event ID card builder preview on a canvas dynamically based on configuration.
+   * Renders the event ID card builder preview on a canvas dynamically.
    */
   public static renderBuilderPreview(
     canvas: HTMLCanvasElement,
@@ -159,6 +132,7 @@ export class PreviewRenderer {
     crop: Area | null,
     rotation: number,
     data: { name: string; role: string; title: string },
+    template: BuilderTemplate,
     config: RenderConfig
   ): void {
     const ctx = canvas.getContext('2d');
@@ -168,26 +142,16 @@ export class PreviewRenderer {
     canvas.width = width;
     canvas.height = height;
 
-    // 1. Draw Card Background (Slate Dark Gradient)
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-    bgGrad.addColorStop(0, '#0f172a'); // slate-900
-    bgGrad.addColorStop(0.5, '#020617'); // slate-950
-    bgGrad.addColorStop(1, '#000000'); // black
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, width, height);
-
-    // Draw glowing spots in corners
-    const radialBlue = ctx.createRadialGradient(width, 0, 10, width, 0, 200 * scale);
-    radialBlue.addColorStop(0, 'rgba(14, 165, 233, 0.15)');
-    radialBlue.addColorStop(1, 'rgba(14, 165, 233, 0)');
-    ctx.fillStyle = radialBlue;
-    ctx.fillRect(0, 0, width, height);
-
-    const radialGreen = ctx.createRadialGradient(0, height, 10, 0, height, 200 * scale);
-    radialGreen.addColorStop(0, 'rgba(16, 185, 129, 0.15)');
-    radialGreen.addColorStop(1, 'rgba(16, 185, 129, 0)');
-    ctx.fillStyle = radialGreen;
-    ctx.fillRect(0, 0, width, height);
+    // 1. Draw Card Background
+    if (template.renderBackground) {
+      template.renderBackground(ctx, config);
+    } else {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, template.colors.backgroundStart);
+      bgGrad.addColorStop(1, template.colors.backgroundEnd);
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+    }
 
     // 2. Draw Top Lanyard slot (80x14 slot at y=16 in base 500x790 coordinates)
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
@@ -208,27 +172,28 @@ export class PreviewRenderer {
     ctx.stroke();
 
     // 3. Draw Header Brand Details
-    ctx.fillStyle = '#0ea5e9'; // Accent blue
-    ctx.font = `extrabold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+    ctx.fillStyle = template.colors.accent;
+    ctx.font = `extrabold ${Math.round(18 * scale)}px ${template.typography.heading}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText('HH GOA // 2026', width / 2, 70 * scale);
-
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
-    ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
+    
+    // Draw top brand logo text if templates don't override the top area
+    if (template.id !== 'goa-jungle') {
+      ctx.fillText('HH GOA // 2026', width / 2, 70 * scale);
+      ctx.fillStyle = template.colors.text;
+      ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.body}`;
+      ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
+    }
 
     // 4. Draw User Portrait with rounded corners (240x240 size at y=140 in base)
     const portSize = 240 * scale;
     const portX = (width - portSize) / 2;
     const portY = 140 * scale;
 
-    // Draw border card backing for portrait
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1 * scale;
     ctx.strokeRect(portX - 1, portY - 1, portSize + 2, portSize + 2);
 
-    // Clip to draw image rounded
     ctx.save();
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
@@ -238,36 +203,50 @@ export class PreviewRenderer {
     }
     ctx.clip();
     
-    // Draw the cropped/transformed image directly on the clipped region
     this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
     ctx.restore();
 
     // 5. Draw Details
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = template.colors.text;
 
-    // Name
-    const name = data.name || 'YOUR NAME';
-    ctx.font = `bold ${Math.round(26 * scale)}px "Space Grotesk", sans-serif`;
+    // Name (with auto text wrapping/clipping to prevent overflow of long inputs)
+    const name = (data.name || 'YOUR NAME').toUpperCase();
+    ctx.font = `bold ${Math.round(24 * scale)}px ${template.typography.heading}`;
+    
+    // Safe text bounds check
+    const maxTextWidth = width - 80 * scale;
+    let nameFontW = 24;
+    ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
+    while (ctx.measureText(name).width > maxTextWidth && nameFontW > 14) {
+      nameFontW -= 2;
+      ctx.font = `bold ${Math.round(nameFontW * scale)}px ${template.typography.heading}`;
+    }
     ctx.fillText(name, width / 2, 440 * scale);
 
     // Role
     const role = (data.role || 'STACK / ROLE').toUpperCase();
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `${Math.round(14 * scale)}px "Fira Code", monospace`;
+    ctx.fillStyle = template.colors.secondary;
+    ctx.font = `${Math.round(13 * scale)}px ${template.typography.mono}`;
+    
+    // Role font resizing bounds check
+    let roleFontW = 13;
+    while (ctx.measureText(role).width > maxTextWidth && roleFontW > 9) {
+      roleFontW -= 1;
+      ctx.font = `${Math.round(roleFontW * scale)}px ${template.typography.mono}`;
+    }
     ctx.fillText(role, width / 2, 475 * scale);
 
-    // 6. Title Badge (Terminal Wizard etc. at y=515 in base)
+    // 6. Title Badge (Wizard etc. at y=515 in base)
     const title = (data.title || 'BUILDER').toUpperCase();
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.1)';
-    ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+    ctx.fillStyle = template.colors.badgeBg;
+    ctx.strokeStyle = template.colors.badgeText;
     ctx.lineWidth = 1 * scale;
     
-    // Measure title text to adjust badge width
-    ctx.font = `bold ${Math.round(12 * scale)}px "Fira Code", monospace`;
+    ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.mono}`;
     const textWidth = ctx.measureText(title).width;
-    const badgeW = textWidth + 32 * scale;
-    const badgeH = 28 * scale;
+    const badgeW = textWidth + 30 * scale;
+    const badgeH = 26 * scale;
     const badgeX = (width - badgeW) / 2;
     const badgeY = 515 * scale;
 
@@ -280,10 +259,10 @@ export class PreviewRenderer {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#10b981'; // Neon green
-    ctx.fillText(title, width / 2, badgeY + 18 * scale);
+    ctx.fillStyle = template.colors.badgeText;
+    ctx.fillText(title, width / 2, badgeY + 17 * scale);
 
-    // 7. Footer Meta Details (y=660 in base)
+    // 7. Footer Divider Line (y=660 in base)
     const footerY = 660 * scale;
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1 * scale;
@@ -292,23 +271,29 @@ export class PreviewRenderer {
     ctx.lineTo(width - 30 * scale, footerY);
     ctx.stroke();
 
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `${Math.round(10 * scale)}px "Fira Code", monospace`;
+    // Footer Text Details
+    ctx.fillStyle = template.colors.secondary;
+    ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
     
     ctx.textAlign = 'left';
     ctx.fillText('STATION: GOA_SAND', 30 * scale, footerY + 25 * scale);
     ctx.fillText('DATE: 28-31_OCT_2026', 30 * scale, footerY + 45 * scale);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#0ea5e9';
-    ctx.font = `bold ${Math.round(10 * scale)}px "Fira Code", monospace`;
+    ctx.fillStyle = template.colors.accent;
+    ctx.font = `bold ${Math.round(10 * scale)}px ${template.typography.mono}`;
     ctx.fillText('VERIFIED_BUILDER', width - 30 * scale, footerY + 25 * scale);
     
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `${Math.round(10 * scale)}px "Fira Code", monospace`;
+    ctx.fillStyle = template.colors.secondary;
+    ctx.font = `${Math.round(10 * scale)}px ${template.typography.mono}`;
     ctx.fillText('ID: 247-PM-STU', width - 30 * scale, footerY + 45 * scale);
 
-    // Outer card glow/border
+    // 8. Custom Overlays from the Template config
+    if (template.renderOverlay) {
+      template.renderOverlay(ctx, config, data);
+    }
+
+    // Outer card glow border
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 2 * scale;
     ctx.strokeRect(0, 0, width, height);

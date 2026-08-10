@@ -11,6 +11,14 @@ export const colors = {
   accentGreen: '#10b981', // emerald-500
   accentBlueGlow: 'rgba(14, 165, 233, 0.15)',
   accentGreenGlow: 'rgba(16, 185, 129, 0.15)',
+  
+  // HH Goa Brand Tokens
+  brandGreen: '#006c35',
+  brandYellow: '#ffd000',
+  brandPink: '#ff007f',
+  brandPrimary: '#006c35',
+  brandSecondary: '#ffd000',
+  brandAccent: '#ff007f',
 } as const;
 
 export type ColorsType = typeof colors;

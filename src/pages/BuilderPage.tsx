@@ -5,17 +5,10 @@ import { Card } from '../components/ui/Card';
 import { ImageUploader } from '../components/image/ImageUploader';
 import { ImageControls } from '../components/image/ImageControls';
 import { PreviewWindow } from '../components/preview/PreviewWindow';
+import { TemplateSelector } from '../components/ui/TemplateSelector';
+import { BUILDER_TITLES } from '../constants/builderTitles';
 import { FiUser, FiCode, FiAward } from 'react-icons/fi';
 import { motion } from 'framer-motion';
-
-const MOCK_TITLES = [
-  'AI Alchemist',
-  'Vision Architect',
-  'Pixel Pirate',
-  'Bug Hunter',
-  'Terminal Wizard',
-  'Builder',
-];
 
 export const BuilderPage: React.FC = () => {
   const {
@@ -128,9 +121,6 @@ export const BuilderPage: React.FC = () => {
                     <FiAward size={12} className="text-neutral-500" />
                     Builder Title
                   </label>
-                  <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-widest">
-                    Auto-Matching in Phase 4
-                  </span>
                 </div>
                 <div className="relative">
                   <select
@@ -139,7 +129,7 @@ export const BuilderPage: React.FC = () => {
                     onChange={handleTitleChange}
                     className="w-full bg-neutral-950/80 border border-white/5 focus:border-accent-green/40 rounded-xl px-4 py-2.5 text-sm text-white outline-none appearance-none transition-all duration-200 cursor-pointer font-sans"
                   >
-                    {MOCK_TITLES.map((title) => (
+                    {BUILDER_TITLES.map((title) => (
                       <option key={title} value={title} className="bg-neutral-950">
                         {title}
                       </option>
@@ -154,6 +144,9 @@ export const BuilderPage: React.FC = () => {
               </div>
             </div>
           </Card>
+
+          {/* Template Selector */}
+          <TemplateSelector mode="builder" />
         </div>
 
         {/* Right Column: Preview window */}

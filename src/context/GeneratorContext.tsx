@@ -23,8 +23,10 @@ export interface GeneratorContextType {
   setRotation: (rotation: number) => void;
   croppedAreaPixels: Area | null;
   setCroppedAreaPixels: (area: Area | null) => void;
-  selectedFrame: string | null;
-  setSelectedFrame: (frame: string | null) => void;
+  selectedPFPTemplateId: string;
+  setSelectedPFPTemplateId: (id: string) => void;
+  selectedBuilderTemplateId: string;
+  setSelectedBuilderTemplateId: (id: string) => void;
   previewMode: 'frame' | 'builder';
   setPreviewMode: (mode: 'frame' | 'builder') => void;
   builderData: BuilderData;
@@ -47,7 +49,8 @@ export const GeneratorProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [selectedFrame, setSelectedFrame] = useState<string | null>('classic-frame');
+  const [selectedPFPTemplateId, setSelectedPFPTemplateId] = useState<string>('goa-palms');
+  const [selectedBuilderTemplateId, setSelectedBuilderTemplateId] = useState<string>('goa-jungle');
   const [previewMode, setPreviewMode] = useState<'frame' | 'builder'>('frame');
   const [builderData, setBuilderData] = useState<BuilderData>(defaultBuilderData);
   const [generatedTitle, setGeneratedTitle] = useState<string>('Builder');
@@ -61,7 +64,8 @@ export const GeneratorProvider: React.FC<{ children: ReactNode }> = ({ children 
     setZoom(1);
     setRotation(0);
     setCroppedAreaPixels(null);
-    setSelectedFrame('classic-frame');
+    setSelectedPFPTemplateId('goa-palms');
+    setSelectedBuilderTemplateId('goa-jungle');
     setBuilderData(defaultBuilderData);
     setGeneratedTitle('Builder');
   };
@@ -79,8 +83,10 @@ export const GeneratorProvider: React.FC<{ children: ReactNode }> = ({ children 
         setRotation,
         croppedAreaPixels,
         setCroppedAreaPixels,
-        selectedFrame,
-        setSelectedFrame,
+        selectedPFPTemplateId,
+        setSelectedPFPTemplateId,
+        selectedBuilderTemplateId,
+        setSelectedBuilderTemplateId,
         previewMode,
         setPreviewMode,
         builderData,

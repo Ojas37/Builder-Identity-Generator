@@ -5,7 +5,7 @@ import { Card } from '../components/ui/Card';
 import { ImageUploader } from '../components/image/ImageUploader';
 import { ImageControls } from '../components/image/ImageControls';
 import { PreviewWindow } from '../components/preview/PreviewWindow';
-import { FiImage, FiLock } from 'react-icons/fi';
+import { TemplateSelector } from '../components/ui/TemplateSelector';
 import { motion } from 'framer-motion';
 
 export const FramePage: React.FC = () => {
@@ -52,36 +52,8 @@ export const FramePage: React.FC = () => {
           {/* Controls selector */}
           <ImageControls />
 
-          {/* Frame selector placeholder */}
-          <Card className="relative border border-white/5 bg-neutral-900/10 p-6 overflow-hidden">
-            {/* Phase 4 Lock Overlay */}
-            <div className="absolute inset-0 z-20 backdrop-blur-[2px] bg-neutral-950/40 flex flex-col items-center justify-center p-4 text-center">
-              <div className="w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-accent-blue mb-2 shadow-lg">
-                <FiLock size={14} />
-              </div>
-              <span className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                Frame Theme Packs
-              </span>
-              <span className="text-[10px] text-neutral-400 font-mono mt-0.5">
-                Coming in Phase 4
-              </span>
-            </div>
-
-            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 font-mono text-neutral-500">
-              2. Select Frame Style
-            </h3>
-            <div className="grid grid-cols-3 gap-3 opacity-30">
-              {['Classic Goa', 'Neon Ocean', 'Terminal Glow'].map((name, i) => (
-                <div
-                  key={i}
-                  className="aspect-square border border-white/5 rounded-2xl bg-neutral-900 flex flex-col items-center justify-center p-3"
-                >
-                  <FiImage size={18} className="text-neutral-500 mb-2" />
-                  <span className="text-[9px] font-mono text-neutral-400">{name}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          {/* Template Selector */}
+          <TemplateSelector mode="frame" />
         </div>
 
         {/* Right Column: Preview window */}

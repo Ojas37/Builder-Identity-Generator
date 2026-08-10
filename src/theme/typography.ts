@@ -2,6 +2,7 @@ export const typography = {
   fontFamily: {
     sans: 'Space Grotesk, Inter, system-ui, -apple-system, sans-serif',
     mono: 'Fira Code, JetBrains Mono, ui-monospace, monospace',
+    serif: '"DM Serif Display", Georgia, Cambria, "Times New Roman", Times, serif',
   },
   fontSize: {
     xs: '0.75rem',     // 12px

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useGenerator } from '../context/GeneratorContext';
 import { PreviewRenderer } from '../canvas/PreviewRenderer';
 import { createImage } from '../utils/image';
+import { pfpTemplates } from '../templates/pfp/templates';
+import { builderTemplates } from '../templates/builder/templates';
 import type { RenderConfig } from '../export/exportTypes';
 
 export function useImageTransform() {
@@ -9,7 +11,8 @@ export function useImageTransform() {
     uploadedImage,
     croppedAreaPixels,
     rotation,
-    selectedFrame,
+    selectedPFPTemplateId,
+    selectedBuilderTemplateId,
     previewMode,
     builderData,
     generatedTitle,
@@ -34,6 +37,15 @@ export function useImageTransform() {
       setIsProcessing(true);
       setError(null);
       try {
+        // Explicitly wait for fonts to load before drawing to canvas to prevent fallback text rendering
+        if (typeof document !== 'undefined' && 'fonts' in document) {
+          try {
+            await document.fonts.ready;
+          } catch (e) {
+            console.warn('Font loading failed or timed out. Proceeding with rendering.');
+          }
+        }
+
         // 1. Load the original image once
         const image = await createImage(uploadedImage);
 
@@ -60,17 +72,19 @@ export function useImageTransform() {
         // Create canvas for drawing
         const canvas = document.createElement('canvas');
 
-        // 3. Render directly using the PreviewRenderer
+        // 3. Render directly using the PreviewRenderer with chosen template
         if (previewMode === 'frame') {
+          const template = pfpTemplates.find(t => t.id === selectedPFPTemplateId) || pfpTemplates[0];
           PreviewRenderer.renderFramePreview(
             canvas,
             image,
             croppedAreaPixels,
             rotation,
-            selectedFrame,
+            template,
             config
           );
         } else {
+          const template = builderTemplates.find(t => t.id === selectedBuilderTemplateId) || builderTemplates[0];
           PreviewRenderer.renderBuilderPreview(
             canvas,
             image,
@@ -81,6 +95,7 @@ export function useImageTransform() {
               role: builderData.role,
               title: generatedTitle,
             },
+            template,
             config
           );
         }
@@ -128,7 +143,8 @@ export function useImageTransform() {
     uploadedImage,
     croppedAreaPixels,
     rotation,
-    selectedFrame,
+    selectedPFPTemplateId,
+    selectedBuilderTemplateId,
     previewMode,
     builderData.name,
     builderData.role,

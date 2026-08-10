@@ -14,7 +14,8 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ mode }) => {
     uploadedImage,
     croppedAreaPixels,
     rotation,
-    selectedFrame,
+    selectedPFPTemplateId,
+    selectedBuilderTemplateId,
     builderData,
     generatedTitle,
   } = useGenerator();
@@ -43,7 +44,8 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ mode }) => {
       uploadedImage,
       crop: croppedAreaPixels,
       rotation,
-      selectedFrame,
+      selectedPFPTemplateId,
+      selectedBuilderTemplateId,
       builderData,
       generatedTitle,
     };

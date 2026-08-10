@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fira+Code:wght@300..700&family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -9,8 +10,14 @@
   --color-accent-blue: #0ea5e9;
   --color-accent-green: #10b981;
   
+  /* HH Goa Brand Colors */
+  --color-brand-green: #006c35;
+  --color-brand-yellow: #ffd000;
+  --color-brand-pink: #ff007f;
+  
   --font-sans: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "Fira Code", "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: "DM Serif Display", Georgia, Cambria, "Times New Roman", serif;
   
   --letter-spacing-builder: 0.2em;
   
