@@ -77,7 +77,7 @@ export function useImageTransform() {
           await PreviewRenderer.preloadImage('/goa-bg.png');
         }
         if (previewMode === 'builder' && selectedBuilderTemplateId === 'goa-boarding-pass') {
-          await PreviewRenderer.preloadImage('/card-bg.png');
+          await PreviewRenderer.preloadImage('/Bg.png');
         }
 
         // 3. Render directly using the PreviewRenderer with chosen template

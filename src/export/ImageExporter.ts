@@ -82,7 +82,7 @@ export class ImageExporter {
       await PreviewRenderer.preloadImage('/goa-bg.png');
     }
     if (mode === 'builder' && selectedBuilderTemplateId === 'goa-boarding-pass') {
-      await PreviewRenderer.preloadImage('/card-bg.png');
+      await PreviewRenderer.preloadImage('/Bg.png');
     }
 
     // 4. Render composition on canvas

@@ -648,34 +648,24 @@ export class PreviewRenderer {
       ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
     }
 
-    // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
+    // 4. Draw User Portrait
     const isBoardingPass = template.id === 'goa-boarding-pass';
-    const portSize = isBoardingPass ? 160 * scale : 240 * scale;
-    const portX = isBoardingPass ? 170 * scale : (width - portSize) / 2;
-    const portY = isBoardingPass ? 205 * scale : 140 * scale;
+    
+    // For Bg.png template: circle center is cx=251, cy=321 (in 500px base coords)
+    // The inner circle radius (inside the red ring) is ~155px
+    const portRadius = isBoardingPass ? 152 * scale : 120 * scale;
+    const portCX = isBoardingPass ? 251 * scale : width / 2;
+    const portCY = isBoardingPass ? 321 * scale : 260 * scale;
+    const portSize = portRadius * 2;
+    const portX = portCX - portRadius;
+    const portY = portCY - portRadius;
 
     ctx.save();
-    if (isBoardingPass) {
-      // Circular crop portrait matching boarding pass ticket templates
-      ctx.beginPath();
-      ctx.arc(portX + portSize / 2, portY + portSize / 2, portSize / 2, 0, Math.PI * 2);
-      ctx.clip();
-      this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
-    } else {
-      // Rounded square portrait card clipping
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.lineWidth = 1 * scale;
-      ctx.strokeRect(portX - 1, portY - 1, portSize + 2, portSize + 2);
-
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(portX, portY, portSize, portSize, 20 * scale);
-      } else {
-        ctx.rect(portX, portY, portSize, portSize);
-      }
-      ctx.clip();
-      this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
-    }
+    // Circular crop portrait
+    ctx.beginPath();
+    ctx.arc(portCX, portCY, portRadius, 0, Math.PI * 2);
+    ctx.clip();
+    this.drawCroppedImage(ctx, image, crop, rotation, portX, portY, portSize, portSize);
     ctx.restore();
 
     // 5. Draw Details
