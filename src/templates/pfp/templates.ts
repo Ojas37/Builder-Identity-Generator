@@ -5,7 +5,7 @@ export const pfpTemplates: PFPTemplate[] = [
   {
     id: 'goa-palms',
     name: 'Goa Palms',
-    description: 'Vibrant jungle green frame with yellow header banners, tropical side palm trees, gold badges, and bottom taglines.',
+    description: 'Vibrant Goa beach sunset frame with high-fidelity scenery illustrations, yellow headers, and gold badges.',
     previewColor: '#004d26',
     colors: {
       background: '#004d26',
@@ -20,34 +20,18 @@ export const pfpTemplates: PFPTemplate[] = [
       mono: '"Fira Code", monospace',
     },
     renderBackground(ctx, config) {
-      const { width, height, scale } = config;
+      const { width, height } = config;
       
-      // 1. Deep jungle green forest background
-      ctx.fillStyle = '#004d26';
-      ctx.fillRect(0, 0, width, height);
-
-      // 2. Draw ornate green backing pattern (concentric arches and rings)
-      ctx.strokeStyle = 'rgba(0, 163, 89, 0.25)';
-      ctx.lineWidth = 3 * scale;
-      ctx.beginPath();
-      ctx.arc(width / 2, height / 2 + 25 * scale, 310 * scale, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(width / 2, height / 2 + 25 * scale, 275 * scale, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Curved floral design arcs in background (bolder)
-      ctx.lineWidth = 1.5 * scale;
-      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-        ctx.save();
-        ctx.translate(width / 2, height / 2 + 25 * scale);
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.moveTo(220 * scale, 0);
-        ctx.quadraticCurveTo(260 * scale, 40 * scale, 300 * scale, 0);
-        ctx.stroke();
-        ctx.restore();
+      // Get the preloaded background illustration from the cache
+      const bgImg = PreviewRenderer.getCachedImage('/goa-bg.png');
+      
+      if (bgImg) {
+        // Draw the high-fidelity beach sunset illustration to fill the canvas
+        ctx.drawImage(bgImg, 0, 0, width, height);
+      } else {
+        // Fallback to solid forest green color if background image not found
+        ctx.fillStyle = '#004d26';
+        ctx.fillRect(0, 0, width, height);
       }
     },
     renderFrame(ctx, config) {
@@ -56,22 +40,14 @@ export const pfpTemplates: PFPTemplate[] = [
       const cy = height / 2 + 25 * scale;
       const rad = 210 * scale; // Circular portrait radius matching centered layout
 
-      // 1. Draw two large tropical palm trees framing the left and right sides (bold and prominent!)
-      PreviewRenderer.drawPalmTree(ctx, 85 * scale, height, 480 * scale, scale, '#00a359');
-      PreviewRenderer.drawPalmTree(ctx, width - 85 * scale, height, 480 * scale, scale, '#00a359');
-
-      // Taller golden palm tree outlines
-      PreviewRenderer.drawPalmTree(ctx, 45 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.45)');
-      PreviewRenderer.drawPalmTree(ctx, width - 45 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.45)');
-
-      // 2. Thick gold outer circle frame around photo (bold width)
+      // 1. Thick gold outer circle frame around photo (bold width)
       ctx.strokeStyle = '#ffd000';
       ctx.lineWidth = 12 * scale;
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.stroke();
 
-      // 3. Gold scalloped border ring outside the photo frame (large scallops)
+      // 2. Gold scalloped border ring outside the photo frame (large scallops)
       PreviewRenderer.drawScallopedBorder(ctx, cx, cy, rad + 12 * scale, scale);
     },
     renderOverlay(ctx, config, data) {

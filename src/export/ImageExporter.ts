@@ -77,6 +77,11 @@ export class ImageExporter {
     // 3. Create high-resolution rendering canvas
     const canvas = document.createElement('canvas');
     
+    // Preload template background illustrations if needed
+    if (mode === 'frame' && selectedPFPTemplateId === 'goa-palms') {
+      await PreviewRenderer.preloadImage('/goa-bg.png');
+    }
+
     // 4. Render composition on canvas
     if (mode === 'frame') {
       const template =

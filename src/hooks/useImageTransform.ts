@@ -72,6 +72,11 @@ export function useImageTransform() {
         // Create canvas for drawing
         const canvas = document.createElement('canvas');
 
+        // Preload template background illustrations if needed (e.g. goa-bg.png for goa-palms template)
+        if (previewMode === 'frame' && selectedPFPTemplateId === 'goa-palms') {
+          await PreviewRenderer.preloadImage('/goa-bg.png');
+        }
+
         // 3. Render directly using the PreviewRenderer with chosen template
         if (previewMode === 'frame') {
           const template = pfpTemplates.find(t => t.id === selectedPFPTemplateId) || pfpTemplates[0];

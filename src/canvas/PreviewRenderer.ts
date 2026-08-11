@@ -776,4 +776,28 @@ export class PreviewRenderer {
     ctx.lineWidth = 2 * scale;
     ctx.strokeRect(0, 0, width, height);
   }
+
+  private static imageCache = new Map<string, HTMLImageElement>();
+
+  public static async preloadImage(src: string): Promise<HTMLImageElement> {
+    if (this.imageCache.has(src)) {
+      return this.imageCache.get(src)!;
+    }
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        this.imageCache.set(src, img);
+        resolve(img);
+      };
+      img.onerror = () => {
+        // Fallback gracefully if image not found or fails to load
+        resolve(null as any);
+      };
+    });
+  }
+
+  public static getCachedImage(src: string): HTMLImageElement | null {
+    return this.imageCache.get(src) || null;
+  }
 }
