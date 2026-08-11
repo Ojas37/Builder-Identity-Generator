@@ -75,54 +75,84 @@ export const builderTemplates: BuilderTemplate[] = [
       const { width, scale } = config;
       const cx = width / 2;
 
-      // The background Bg.png is 1024x1536, rendered into 500x790.
-      // Scale factor from image coords: x / (1024/500) = x * 0.488, y / (1536/790) = y * 0.514
+      // Bg.png is 1024x1536 → rendered at 500x790.
+      // All coordinates below are in the 500x790 base canvas space.
+      // The cream background colour of the card:
+      const cream = '#f5f0e2';
 
-      // 1. NAME box: image coords NAME box center is approx cx=498, cy=999 (1024x1536)
-      //    In 500x790: cx=243, cy=514
-      //    Box bounds: x=98 to x=400 width=302, height roughly 100 => ~50 in 500px space
-      const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
-      const nameCY = 514 * scale;
+      // ── NAME BOX ──────────────────────────────────────────────────
+      // Box interior (inside the dotted pink border) in 500×790:
+      //   x ≈ 105–395, centre-y ≈ 500, box height ≈ 42
+      const nameBoxX  = 107 * scale;
+      const nameBoxY  = 478 * scale;
+      const nameBoxW  = 285 * scale;
+      const nameBoxH  = 44 * scale;
+      const nameBoxCY = nameBoxY + nameBoxH / 2;
 
-      ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(22 * scale)}px "Space Grotesk", sans-serif`;
+      // 1. Erase the baked-in "NAME" placeholder text
+      ctx.fillStyle = cream;
+      ctx.fillRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
+
+      // 2. Draw the user's name
+      const nameText = (data?.name || '').trim().toUpperCase();
+      if (nameText) {
+        ctx.fillStyle = '#004d26';
+        ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(nameText, cx, nameBoxCY, nameBoxW - 12 * scale);
+      }
+
+      // ── ROLE BOX ──────────────────────────────────────────────────
+      // Box interior in 500×790: x ≈ 105–395, centre-y ≈ 582, box height ≈ 36
+      const roleBoxX  = 107 * scale;
+      const roleBoxY  = 563 * scale;
+      const roleBoxW  = 285 * scale;
+      const roleBoxH  = 38 * scale;
+      const roleBoxCY = roleBoxY + roleBoxH / 2;
+
+      // 1. Erase the baked-in "ROLE" placeholder text
+      ctx.fillStyle = cream;
+      ctx.fillRect(roleBoxX, roleBoxY, roleBoxW, roleBoxH);
+
+      // 2. Draw the user's role
+      const roleText = (data?.role || '').trim().toUpperCase();
+      if (roleText) {
+        ctx.fillStyle = '#1a3a20';
+        ctx.font = `bold ${Math.round(13 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(roleText, cx, roleBoxCY, roleBoxW - 12 * scale);
+      }
+
+      // ── BUILDER TITLE (column 1, bottom section) ───────────────────
+      // "TERMINAL WIZARD" sits at approximately y=654–698 in 500×790.
+      // The "★ BUILDER CLASS ★" label above it at y=638–653 is kept.
+      const titleText   = (data?.title || 'BUILDER').trim().toUpperCase();
+      const col1CX      = 83 * scale;
+      const titleAreaX  = 16 * scale;
+      const titleAreaY  = 652 * scale;  // top of TERMINAL WIZARD text
+      const titleAreaW  = 150 * scale;
+      const titleAreaH  = 50 * scale;
+
+      // Erase the baked-in title text
+      ctx.fillStyle = cream;
+      ctx.fillRect(titleAreaX, titleAreaY, titleAreaW, titleAreaH);
+
+      // Draw user's title (split on spaces, max 2 lines)
+      const titleLines = titleText.split(' ');
+      ctx.fillStyle = '#cc0055';
+      ctx.font = `bold ${Math.round(14 * scale)}px "DM Serif Display", Georgia, serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(nameText, cx, nameCY);
-
-      // 2. ROLE box: image coords cy=1139 (1024x1536) => 586 in 500x790
-      const roleText = (data?.role || 'ROLE').trim().toUpperCase();
-      const roleCY = 586 * scale;
-
-      ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText(roleText, cx, roleCY);
-
-      // 3. Builder title in BUILDER CLASS column (Col 1)
-      // TERMINAL WIZARD text is in the image around y=640 in 790px space
-      // Cover it and replace
-      const titleText = (data?.title || 'BUILDER').trim().toUpperCase();
-      const titleLines = titleText.split(' ');
-      const titleCY = 646 * scale;
-      const col1CX = 97 * scale;
-
-      // Cover old title text
-      ctx.fillStyle = '#fdfcf7';
-      ctx.fillRect(20 * scale, titleCY - 22 * scale, 155 * scale, 50 * scale);
-
-      // Draw new title (up to 2 lines)
-      ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(15 * scale)}px "DM Serif Display", Georgia, serif`;
-      ctx.textAlign = 'center';
-      if (titleLines.length <= 2) {
-        ctx.fillText(titleLines[0], col1CX, titleCY - 8 * scale);
-        if (titleLines[1]) {
-          ctx.fillText(titleLines[1], col1CX, titleCY + 12 * scale);
-        }
+      if (titleLines.length === 1) {
+        ctx.fillText(titleLines[0], col1CX, titleAreaY + titleAreaH / 2);
       } else {
-        // Join first two words on line 1, rest on line 2
-        ctx.fillText(titleLines.slice(0, 2).join(' '), col1CX, titleCY - 8 * scale);
-        ctx.fillText(titleLines.slice(2).join(' '), col1CX, titleCY + 12 * scale);
+        const half = Math.ceil(titleLines.length / 2);
+        const line1 = titleLines.slice(0, half).join(' ');
+        const line2 = titleLines.slice(half).join(' ');
+        ctx.fillText(line1, col1CX, titleAreaY + titleAreaH * 0.32);
+        ctx.fillText(line2, col1CX, titleAreaY + titleAreaH * 0.68);
       }
     },
   },

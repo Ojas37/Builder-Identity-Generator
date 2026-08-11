@@ -651,9 +651,9 @@ export class PreviewRenderer {
 
     // For Bg.png template: circle center is cx=251, cy=321 (in 500px base coords)
     // The inner circle radius (inside the red ring) is ~152px
-    const portRadius = isBoardingPass ? 152 * scale : 120 * scale;
-    const portCX = isBoardingPass ? 251 * scale : width / 2;
-    const portCY = isBoardingPass ? 321 * scale : 260 * scale;
+    const portRadius = isBoardingPass ? 138 * scale : 120 * scale;
+    const portCX = isBoardingPass ? 250 * scale : width / 2;
+    const portCY = isBoardingPass ? 324 * scale : 260 * scale;
     const portSize = portRadius * 2;
     const portX = portCX - portRadius;
     const portY = portCY - portRadius;
