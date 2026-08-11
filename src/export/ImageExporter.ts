@@ -81,6 +81,9 @@ export class ImageExporter {
     if (mode === 'frame' && selectedPFPTemplateId === 'goa-palms') {
       await PreviewRenderer.preloadImage('/goa-bg.png');
     }
+    if (mode === 'builder' && selectedBuilderTemplateId === 'goa-boarding-pass') {
+      await PreviewRenderer.preloadImage('/card-bg.png');
+    }
 
     // 4. Render composition on canvas
     if (mode === 'frame') {

@@ -56,326 +56,178 @@ export const builderTemplates: BuilderTemplate[] = [
       mono: '"Fira Code", monospace',
     },
     renderBackground(ctx, config) {
-      const { width, height, scale } = config;
+      const { width, height } = config;
 
-      // Draw cream card base background
-      ctx.fillStyle = '#fdfcf7';
-      ctx.fillRect(0, 0, width, height);
-
-      // Draw thin double dark-green border frame around card edge (bolder)
-      ctx.strokeStyle = '#004d26';
-      ctx.lineWidth = 2 * scale;
-      ctx.strokeRect(10 * scale, 10 * scale, width - 20 * scale, height - 20 * scale);
-      
-      ctx.lineWidth = 1 * scale;
-      ctx.strokeRect(14 * scale, 14 * scale, width - 28 * scale, height - 28 * scale);
+      // Draw the high-fidelity professional card template illustration
+      const bgImg = PreviewRenderer.getCachedImage('/card-bg.png');
+      if (bgImg) {
+        ctx.drawImage(bgImg, 0, 0, width, height);
+      } else {
+        // Fallback to solid cream color if reference image not found
+        ctx.fillStyle = '#fdfcf7';
+        ctx.fillRect(0, 0, width, height);
+      }
     },
     renderOverlay(ctx, config, data) {
-      const { width, height, scale } = config;
+      const { width, scale } = config;
       const cx = width / 2;
 
-      // 1. Draw top brand ticket slot badge
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(190 * scale, 10 * scale, 120 * scale, 35 * scale, [0, 0, 8 * scale, 8 * scale]);
-      } else {
-        ctx.rect(190 * scale, 10 * scale, 120 * scale, 35 * scale);
-      }
-      ctx.fill();
+      // 1. Draw elegant outer framing around portrait to fit custom uploaded photos cleanly
+      const pcy = 285 * scale;
+      const prad = 80 * scale;
+      PreviewRenderer.drawScallopedBorder(ctx, cx, pcy, prad, scale);
 
-      // Top stamp palm tree icon
-      PreviewRenderer.drawPalmTree(ctx, 250 * scale, 22 * scale, 12 * scale, scale, '#ffd000');
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText('HH GOA 2026', 250 * scale, 36 * scale);
-
-      // 2. Draw Main Title: HACKER गोवा HOUSE (bolder text)
-      ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(30 * scale)}px "DM Serif Display", Georgia, serif`;
-      ctx.textAlign = 'right';
-      ctx.fillText('HACKER', 205 * scale, 85 * scale);
-
-      ctx.textAlign = 'left';
-      ctx.fillText('HOUSE', 295 * scale, 85 * scale);
-
-      // Draw middle 'गोवा' text block with a pink background and yellow outline
-      ctx.save();
-      ctx.translate(250 * scale, 80 * scale);
-      ctx.rotate(-8 * Math.PI / 180);
-      
-      ctx.fillStyle = '#ffd000';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(-26 * scale, -16 * scale, 52 * scale, 28 * scale, 4 * scale);
-      } else {
-        ctx.rect(-26 * scale, -16 * scale, 52 * scale, 28 * scale);
-      }
-      ctx.fill();
-
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(-24 * scale, -14 * scale, 48 * scale, 24 * scale, 3 * scale);
-      } else {
-        ctx.rect(-24 * scale, -14 * scale, 48 * scale, 24 * scale);
-      }
-      ctx.fill();
-
-      ctx.fillStyle = '#ffd000';
-      ctx.font = `bold ${Math.round(15 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('गोवा', 0, 0);
-      ctx.restore();
-
-      // 3. Draw Vintage Postage Stamp (top left)
-      PreviewRenderer.drawPerforatedStamp(ctx, 25 * scale, 32 * scale, 70 * scale, 85 * scale, scale, '#004d26');
-
-      // 4. Draw Circular Postmark Stamp (top right)
-      PreviewRenderer.drawPostmarkStamp(ctx, 420 * scale, 75 * scale, 45 * scale, 'GOA 2026', '#004d26', scale);
-
-      // 5. Left Stub Illustration: Wooden Signpost & Leaning Surfboards (Clean & Professional)
-      const postX = 65 * scale;
-      const postY = 320 * scale;
-
-      // Draw thick wooden signpost
-      ctx.fillStyle = '#8b5a2b'; // Dark brown
-      ctx.fillRect(postX - 3 * scale, postY, 6 * scale, 170 * scale);
-
-      // Draw signposts arrows (Build, Ship, Repeat)
-      const drawSignArrow = (arrowY: number, arrowText: string, color: string, isLeft: boolean) => {
-        ctx.save();
-        ctx.translate(postX, arrowY);
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        if (isLeft) {
-          ctx.moveTo(-35 * scale, 0);
-          ctx.lineTo(-20 * scale, -10 * scale);
-          ctx.lineTo(15 * scale, -10 * scale);
-          ctx.lineTo(15 * scale, 10 * scale);
-          ctx.lineTo(-20 * scale, 10 * scale);
-        } else {
-          ctx.moveTo(35 * scale, 0);
-          ctx.lineTo(20 * scale, -10 * scale);
-          ctx.lineTo(-15 * scale, -10 * scale);
-          ctx.lineTo(-15 * scale, 10 * scale);
-          ctx.lineTo(20 * scale, 10 * scale);
-        }
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = `bold ${Math.round(9 * scale)}px "Space Grotesk", sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(arrowText, isLeft ? -10 * scale : 10 * scale, 0);
-        ctx.restore();
-      };
-
-      drawSignArrow(postY + 30 * scale, 'BUILD', '#ffd000', false);
-      drawSignArrow(postY + 65 * scale, 'SHIP', '#ff007f', true);
-      drawSignArrow(postY + 100 * scale, 'REPEAT', '#00a359', false);
-
-      // Leaning surfboards next to the signpost (much more detailed)
-      const drawSurfboard = (sX: number, sColor: string, stripeColor: string, rotationDeg: number) => {
-        ctx.save();
-        ctx.translate(sX, postY + 155 * scale);
-        ctx.rotate(rotationDeg * Math.PI / 180);
-        ctx.fillStyle = sColor;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 10 * scale, 35 * scale, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = stripeColor;
-        ctx.lineWidth = 2 * scale;
-        ctx.beginPath();
-        ctx.moveTo(0, -35 * scale);
-        ctx.lineTo(0, 35 * scale);
-        ctx.stroke();
-        ctx.restore();
-      };
-      drawSurfboard(postX - 25 * scale, '#ffd000', '#ff007f', -15);
-      drawSurfboard(postX - 12 * scale, '#ff007f', '#004d26', -5);
-
-      // 6. Right Stub Illustration: Beach Cottage & Scooter (Polished layout)
-      const houseX = 425 * scale;
-      const houseY = 380 * scale;
-
-      // Sun reflection tag above house
-      ctx.fillStyle = '#ffd000';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(houseX - 45 * scale, houseY - 50 * scale, 65 * scale, 18 * scale, 4 * scale);
-      } else {
-        ctx.rect(houseX - 45 * scale, houseY - 50 * scale, 65 * scale, 18 * scale);
-      }
-      ctx.fill();
-      ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText("LET'S BUILD!", houseX - 12 * scale, houseY - 38 * scale);
-
-      // Beach house walls
-      ctx.fillStyle = '#ffd000';
-      ctx.fillRect(houseX - 35 * scale, houseY - 20 * scale, 50 * scale, 40 * scale);
-
-      // Red triangular roof
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      ctx.moveTo(houseX - 42 * scale, houseY - 20 * scale);
-      ctx.lineTo(houseX - 10 * scale, houseY - 45 * scale);
-      ctx.lineTo(houseX + 22 * scale, houseY - 20 * scale);
-      ctx.closePath();
-      ctx.fill();
-
-      // Door and windows
-      ctx.fillStyle = '#ff007f';
-      ctx.fillRect(houseX - 15 * scale, houseY + 5 * scale, 12 * scale, 15 * scale);
-      ctx.fillStyle = '#004d26';
-      ctx.fillRect(houseX - 28 * scale, houseY - 10 * scale, 10 * scale, 10 * scale);
-      ctx.fillRect(houseX + 2 * scale, houseY - 10 * scale, 10 * scale, 10 * scale);
-
-      // Vespa scooter silhouette next to house
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      ctx.arc(houseX + 28 * scale, houseY + 16 * scale, 6 * scale, 0, Math.PI * 2); // rear wheel
-      ctx.arc(houseX + 44 * scale, houseY + 16 * scale, 6 * scale, 0, Math.PI * 2); // front wheel
-      ctx.fill();
-
+      // Red inner teeth ring
       ctx.strokeStyle = '#ff007f';
-      ctx.lineWidth = 3 * scale;
+      ctx.lineWidth = 2 * scale;
       ctx.beginPath();
-      ctx.moveTo(houseX + 28 * scale, houseY + 16 * scale);
-      ctx.lineTo(houseX + 36 * scale, houseY + 8 * scale);
-      ctx.lineTo(houseX + 44 * scale, houseY + 16 * scale);
-      ctx.moveTo(houseX + 36 * scale, houseY + 8 * scale);
-      ctx.lineTo(houseX + 40 * scale, houseY - 2 * scale); // handlebars
+      ctx.arc(cx, pcy, prad - 4 * scale, 0, Math.PI * 2);
       ctx.stroke();
 
-      // 7. Middle User Info Name Badge under Portrait
+      // 2. Clear out the original name/role block and overlay the new user name card
+      // Cover namebox Y=380px to Y=455px
+      ctx.fillStyle = '#fdfcf7';
+      ctx.fillRect(100 * scale, 375 * scale, 300 * scale, 80 * scale);
+
       const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
       const roleText = (data?.role || 'BUILDER').trim().toUpperCase();
 
-      ctx.fillStyle = '#004d26'; // Dark green pill background
-      ctx.font = `bold ${Math.round(20 * scale)}px "Space Grotesk", sans-serif`;
-      const nameWidth = ctx.measureText(nameText).width + 30 * scale;
+      // Green name badge pill card with double border
+      ctx.fillStyle = '#004d26';
+      ctx.strokeStyle = '#ffd000';
+      ctx.lineWidth = 3 * scale;
+
+      const nameW = Math.max(ctx.measureText(nameText).width, 180 * scale) + 40 * scale;
       const bH = 34 * scale;
       const bY = 385 * scale;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(cx - nameWidth / 2, bY, nameWidth, bH, 6 * scale);
+        ctx.roundRect(cx - nameW / 2, bY, nameW, bH, 6 * scale);
       } else {
-        ctx.rect(cx - nameWidth / 2, bY, nameWidth, bH);
+        ctx.rect(cx - nameW / 2, bY, nameW, bH);
       }
       ctx.fill();
+      ctx.stroke();
 
+      // Render name
       ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(nameText, cx, bY + bH / 2);
 
-      // Subtitle Role badge
+      // Role Pill Badge underneath name card
       ctx.fillStyle = '#ffd000';
-      ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
-      const roleWidth = ctx.measureText(`⚡ ${roleText} ⚡`).width + 20 * scale;
-      const rH = 22 * scale;
-      const rY = 428 * scale;
+      ctx.font = `bold ${Math.round(8.5 * scale)}px "Fira Code", monospace`;
+      const roleW = ctx.measureText(`⚡ ${roleText} ⚡`).width + 24 * scale;
+      const rH = 18 * scale;
+      const rY = 423 * scale;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(cx - roleWidth / 2, rY, roleWidth, rH, 4 * scale);
+        ctx.roundRect(cx - roleW / 2, rY, roleW, rH, 99);
       } else {
-        ctx.rect(cx - roleWidth / 2, rY, roleWidth, rH);
+        ctx.rect(cx - roleW / 2, rY, roleW, rH);
       }
       ctx.fill();
 
-      ctx.fillStyle = '#004d26';
+      ctx.fillStyle = '#ff007f';
       ctx.fillText(`⚡ ${roleText} ⚡`, cx, rY + rH / 2);
 
-      // 8. Bottom Information Cards (3-Column Layout: BOLDER & LARGER TEXT)
-      const footerY = 510 * scale;
+      // 3. Clean and redraw bottom columns to cover original placeholder data (BOLDER & LARGER)
+      const colY = 490 * scale;
       const colWidth = width / 3;
 
-      // Divider lines
-      ctx.strokeStyle = 'rgba(0, 77, 38, 0.1)';
-      ctx.lineWidth = 1 * scale;
+      // Clear the three columns area
+      ctx.fillStyle = '#fdfcf7';
+      ctx.fillRect(20 * scale, colY - 5 * scale, width - 40 * scale, 240 * scale);
+
+      // Draw grid vertical separator lines
+      ctx.strokeStyle = 'rgba(0, 77, 38, 0.15)';
+      ctx.lineWidth = 1.5 * scale;
       ctx.beginPath();
-      ctx.moveTo(colWidth, footerY + 10 * scale);
-      ctx.lineTo(colWidth, height - 70 * scale);
-      ctx.moveTo(colWidth * 2, footerY + 10 * scale);
-      ctx.lineTo(colWidth * 2, height - 70 * scale);
+      ctx.moveTo(165 * scale, colY - 5 * scale);
+      ctx.lineTo(165 * scale, colY + 235 * scale);
+      ctx.moveTo(330 * scale, colY - 5 * scale);
+      ctx.lineTo(330 * scale, colY + 235 * scale);
       ctx.stroke();
 
       // --- Column 1: BUILDER CLASS ---
       const col1X = colWidth / 2;
       ctx.fillStyle = '#004d26';
       ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText('✦ BUILDER CLASS ✦', col1X, footerY + 15 * scale);
-
-      // Title
+      ctx.fillText('✦ BUILDER CLASS ✦', col1X, colY + 15 * scale);
+      
       ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(18 * scale)}px "DM Serif Display", Georgia, serif`;
-      ctx.fillText((data?.title || 'BUILDER').toUpperCase(), col1X, footerY + 38 * scale);
+      ctx.font = `bold ${Math.round(16 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.fillText((data?.title || 'BUILDER').toUpperCase(), col1X, colY + 38 * scale);
 
-      // QR Code (larger and bold green)
-      PreviewRenderer.drawQRCode(ctx, col1X - 38 * scale, footerY + 52 * scale, 76 * scale, '#004d26');
+      // Green QR code with mini palm tree inside
+      PreviewRenderer.drawQRCode(ctx, col1X - 38 * scale, colY + 52 * scale, 76 * scale, '#004d26');
+      PreviewRenderer.drawPalmTree(ctx, col1X, colY + 112 * scale, 18 * scale, scale, '#ffd000');
 
       // --- Column 2: BEACH BAG ---
       const col2X = colWidth + colWidth / 2;
       ctx.fillStyle = '#004d26';
       ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('✦ BEACH BAG ✦', col2X, footerY + 15 * scale);
+      ctx.fillText('✦ BEACH BAG ✦', col2X, colY + 15 * scale);
 
-      // Draw custom icons and list items
-      const drawListItem = (itemY: number, label: string, iconColor: string) => {
-        // Mini palm stamp as list bullet
-        PreviewRenderer.drawPalmTree(ctx, col2X - 45 * scale, itemY, 8 * scale, scale, iconColor);
-        ctx.fillStyle = '#004d26';
-        ctx.font = `bold ${Math.round(11.5 * scale)}px "Space Grotesk", sans-serif`;
-        ctx.textAlign = 'left';
-        ctx.fillText(label, col2X - 30 * scale, itemY);
-      };
+      ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
+      ctx.textAlign = 'left';
+      
+      // Item 1: Coconut
+      PreviewRenderer.drawPalmTree(ctx, col2X - 45 * scale, colY + 40 * scale, 10 * scale, scale, '#00a359');
+      ctx.fillText('COCONUT', col2X - 25 * scale, colY + 43 * scale);
 
-      drawListItem(footerY + 40 * scale, 'COCONUT', '#00a359');
-      drawListItem(footerY + 64 * scale, 'VS CODE', '#ff007f');
-      drawListItem(footerY + 88 * scale, 'LO-FI BEATS', '#ffd000');
+      // Item 2: VS Code
+      ctx.fillStyle = '#ff007f';
+      ctx.fillText('< />', col2X - 45 * scale, colY + 68 * scale);
+      ctx.fillStyle = '#004d26';
+      ctx.fillText('VS CODE', col2X - 25 * scale, colY + 68 * scale);
 
-      // Wave outline below list
-      ctx.strokeStyle = '#00a359';
+      // Item 3: Lo-Fi Beats
+      ctx.strokeStyle = '#ffd000';
       ctx.lineWidth = 2 * scale;
       ctx.beginPath();
-      ctx.arc(col2X, footerY + 125 * scale, 12 * scale, Math.PI, 0);
+      ctx.arc(col2X - 35 * scale, colY + 92 * scale, 5 * scale, Math.PI, 0);
+      ctx.stroke();
+      ctx.fillStyle = '#004d26';
+      ctx.fillText('LO-FI BEATS', col2X - 25 * scale, colY + 95 * scale);
+
+      // Sunset Ocean wave at the bottom
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      ctx.arc(col2X, colY + 185 * scale, 22 * scale, Math.PI, 0);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#004d26';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.beginPath();
+      ctx.moveTo(col2X - 45 * scale, colY + 188 * scale);
+      ctx.lineTo(col2X + 45 * scale, colY + 188 * scale);
+      ctx.moveTo(col2X - 30 * scale, colY + 193 * scale);
+      ctx.lineTo(col2X + 30 * scale, colY + 193 * scale);
       ctx.stroke();
 
       // --- Column 3: CURRENTLY SHIPPING ---
       const col3X = colWidth * 2 + colWidth / 2;
       ctx.fillStyle = '#004d26';
       ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('✦ CURRENTLY SHIPPING ✦', col3X, footerY + 15 * scale);
+      ctx.textAlign = 'center';
+      ctx.fillText('✦ CURRENTLY SHIPPING ✦', col3X, colY + 15 * scale);
 
       ctx.fillStyle = '#ff007f';
       ctx.font = `bold ${Math.round(13 * scale)}px "DM Serif Display", Georgia, serif`;
-      ctx.fillText('BUILDING THE FUTURE', col3X, footerY + 36 * scale);
+      ctx.fillText('BUILDING THE FUTURE', col3X, colY + 36 * scale);
 
-      // Barcode (larger and bold green)
-      drawBarcode(ctx, col3X - 40 * scale, footerY + 52 * scale, 35 * scale, scale, '#004d26');
+      // Barcode (larger)
+      drawBarcode(ctx, col3X - 40 * scale, colY + 52 * scale, 35 * scale, scale, '#004d26');
 
-      // Credentials ID (larger)
       ctx.fillStyle = '#004d26';
-      ctx.font = `${Math.round(10 * scale)}px "Fira Code", monospace`;
-      ctx.fillText('BUILDER ID: #HH-GOA-7757', col3X, footerY + 108 * scale);
-
-      // 9. Bottom Pink Footer Banner (#FRAMEINGOA)
-      ctx.fillStyle = '#ff007f';
-      ctx.fillRect(25 * scale, height - 52 * scale, width - 50 * scale, 28 * scale);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.round(12 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('#FRAMEINGOA', cx, height - 38 * scale);
+      ctx.font = `${Math.round(9 * scale)}px "Fira Code", monospace`;
+      ctx.fillText('BUILDER ID', col3X, colY + 104 * scale);
+      ctx.fillText('#HH-GOA-7757', col3X, colY + 116 * scale);
     },
   },
   {
@@ -402,7 +254,7 @@ export const builderTemplates: BuilderTemplate[] = [
       const { width, height, scale } = config;
       
       // Deep dark cyber background
-      ctx.fillStyle = '#020504';
+      ctx.fillStyle = '#020604';
       ctx.fillRect(0, 0, width, height);
 
       // Tech Grid overlay
