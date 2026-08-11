@@ -54,13 +54,92 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({ mode }) => {
                   : "bg-transparent border-white/5 hover:border-white/10 hover:bg-white/2 cursor-pointer"
               )}
             >
-              <div className="flex items-center gap-2">
-                {/* Visual color dot representing template color scheme */}
-                <span 
-                  className="w-3.5 h-3.5 rounded-full border border-white/20 flex-shrink-0 shadow-inner"
-                  style={{ backgroundColor: template.previewColor }}
-                  aria-hidden="true"
-                />
+              {/* Miniature preview representing the actual template design */}
+              <div className="w-full h-16 rounded-lg mb-2.5 overflow-hidden relative border border-white/10 bg-neutral-900 shadow-inner select-none pointer-events-none">
+                {/* 1. Builder Card Miniature Previews */}
+                {template.id === 'goa-boarding-pass' && (
+                  <div className="absolute inset-0 bg-[#fdfcf7] flex flex-col p-1 justify-between">
+                    <div className="flex justify-between items-center px-1">
+                      <div className="w-4 h-1.5 bg-[#004d26] rounded-xs" />
+                      <div className="w-3 h-1 bg-[#ff007f] rounded-full" />
+                      <div className="w-4 h-1 bg-[#004d26] rounded-xs" />
+                    </div>
+                    <div className="w-7 h-7 rounded-full border-2 border-[#ffd000] bg-neutral-200 mx-auto flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full bg-neutral-300" />
+                    </div>
+                    <div className="w-12 h-1.5 bg-[#004d26] rounded-xs mx-auto" />
+                    <div className="flex justify-between px-1">
+                      <div className="w-3 h-2 bg-[#ff007f]/30 rounded-xs" />
+                      <div className="w-3 h-2 bg-[#004d26]/20 rounded-xs" />
+                      <div className="w-3 h-2 bg-[#ffd000]/30 rounded-xs" />
+                    </div>
+                  </div>
+                )}
+                {template.id === 'rarity-badge' && (
+                  <div className="absolute inset-0 bg-[#09100d] p-1 flex flex-col justify-between border border-purple-500/30">
+                    <div className="flex justify-between">
+                      <div className="w-1 h-1 bg-purple-500" />
+                      <div className="w-1.5 h-0.5 bg-purple-500" />
+                      <div className="w-1 h-1 bg-purple-500" />
+                    </div>
+                    <div className="w-7 h-7 rounded-full border border-purple-500 bg-neutral-800 mx-auto" />
+                    <div className="w-12 h-2 bg-purple-950/40 border border-purple-500/50 rounded-xs mx-auto" />
+                    <div className="w-16 h-1.5 bg-purple-500/30 rounded-xs mx-auto" />
+                  </div>
+                )}
+                {template.id === 'ocean-sand' && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#0a192f] to-[#000000] p-1 flex flex-col justify-between">
+                    <div className="w-full h-0.5 bg-sky-500/10" />
+                    <div className="w-7 h-7 rounded-full border border-sky-500 bg-neutral-800 mx-auto" />
+                    <div className="w-14 h-1.5 bg-sky-500/20 rounded-xs mx-auto" />
+                    <div className="w-full h-1 bg-sky-500/10" />
+                  </div>
+                )}
+
+                {/* 2. PFP Frame Miniature Previews */}
+                {template.id === 'goa-palms' && (
+                  <div className="absolute inset-0 bg-[#004d26] flex flex-col justify-between">
+                    <div className="w-full h-3.5 bg-[#ffd000] flex items-center justify-center p-0.5">
+                      <div className="w-12 h-1 bg-[#004d26]/40 rounded-full" />
+                    </div>
+                    <div className="w-7 h-7 rounded-full border border-[#ffd000] bg-neutral-200 mx-auto flex items-center justify-center relative">
+                      <div className="w-5 h-5 rounded-full bg-neutral-300" />
+                      <div className="absolute -bottom-1 w-5 h-1.5 bg-[#002612] rounded-xs border border-[#ffd000]/50" />
+                    </div>
+                    <div className="w-full h-2.5 bg-black/60 flex items-center justify-center p-0.5">
+                      <div className="w-10 h-0.5 bg-[#ffd000]/60 rounded-full" />
+                    </div>
+                  </div>
+                )}
+                {template.id === 'boarding-stamp' && (
+                  <div className="absolute inset-0 bg-[#fcfaf5] p-1 flex flex-col justify-between">
+                    <div className="flex justify-between items-start">
+                      <div className="w-8 h-1 bg-[#006c35]/40 rounded-full" />
+                      <div className="w-3 h-4 bg-[#006c35]/20 rounded-xs border border-[#006c35]/30" />
+                    </div>
+                    <div className="w-7 h-7 rounded-full border-2 border-[#006c35] bg-neutral-200 mx-auto flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full bg-neutral-300" />
+                    </div>
+                    <div className="flex justify-between">
+                      <div className="w-3 h-3 bg-[#006c35]/10 rounded-full" />
+                      <div className="w-4 h-4 bg-[#006c35]/15 rounded-full" />
+                    </div>
+                  </div>
+                )}
+                {template.id === 'cyber-terminal' && (
+                  <div className="absolute inset-0 bg-[#020604] p-1 flex flex-col justify-between border border-emerald-500/20">
+                    <div className="w-full h-1 bg-emerald-500/10" />
+                    <div className="w-7 h-7 rounded-full border border-emerald-500 bg-neutral-800 mx-auto flex items-center justify-center relative">
+                      <div className="w-5 h-5 rounded-full bg-neutral-300" />
+                      {/* corner target markers */}
+                      <div className="absolute inset-0.5 border border-emerald-500/30" />
+                    </div>
+                    <div className="w-full h-1 bg-emerald-500/10" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
                 <span className="text-[11px] font-mono font-bold tracking-wide text-white block truncate">
                   {template.name}
                 </span>

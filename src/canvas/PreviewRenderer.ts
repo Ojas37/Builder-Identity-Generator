@@ -534,26 +534,30 @@ export class PreviewRenderer {
 
     // 2. Draw portrait photo inside template-specific masks
     ctx.save();
-    if (template.id === 'goa-palms' || template.id === 'boarding-stamp') {
+    if (template.id === 'goa-palms') {
       const cx = width / 2;
-      const cy = height / 2;
-      const rad = 260 * scale;
+      const cy = height / 2 + 25 * scale;
+      const rad = 190 * scale;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+      ctx.clip();
+      this.drawCroppedImage(ctx, image, crop, rotation, cx - rad, cy - rad, rad * 2, rad * 2);
+    } else if (template.id === 'boarding-stamp') {
+      const cx = width / 2;
+      const cy = height / 2 + 10 * scale;
+      const rad = 190 * scale;
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.clip();
       this.drawCroppedImage(ctx, image, crop, rotation, cx - rad, cy - rad, rad * 2, rad * 2);
     } else if (template.id === 'cyber-terminal') {
-      const size = 560 * scale;
-      const rx = (width - size) / 2;
-      const ry = (height - size) / 2;
+      const cx = width / 2;
+      const cy = height / 2 + 20 * scale;
+      const rad = 200 * scale;
       ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(rx, ry, size, size, 24 * scale);
-      } else {
-        ctx.rect(rx, ry, size, size);
-      }
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.clip();
-      this.drawCroppedImage(ctx, image, crop, rotation, rx, ry, size, size);
+      this.drawCroppedImage(ctx, image, crop, rotation, cx - rad, cy - rad, rad * 2, rad * 2);
     } else {
       const imageSizeW = width - borderSize * 2;
       const imageSizeH = height - borderSize * 2;
