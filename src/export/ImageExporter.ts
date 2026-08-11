@@ -1,7 +1,6 @@
 import { createImage } from '../utils/image';
 import { PreviewRenderer } from '../canvas/PreviewRenderer';
 import { downloadBlob, sanitizeFilename } from '../utils/download';
-import { verifyImageBlobDimensions } from '../utils/verifyImage';
 import { PFP_EXPORT_SIZE, BUILDER_EXPORT_WIDTH, BUILDER_EXPORT_HEIGHT } from '../constants/export';
 import { pfpTemplates } from '../templates/pfp/templates';
 import { builderTemplates } from '../templates/builder/templates';
@@ -111,44 +110,44 @@ export class ImageExporter {
       );
     }
 
-    // 5. Convert Canvas -> Blob -> Verify -> Download
+    // 5. Convert Canvas -> Blob -> Download
     return new Promise<void>((resolve, reject) => {
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          reject(new Error('Failed to capture canvas export blob'));
-          return;
-        }
-
-        try {
-          // Programmatically verify the exported PNG dimensions to make sure the bounds are exact
-          await verifyImageBlobDimensions(blob, exportWidth, exportHeight);
-
-          // Build and sanitize file name
-          let rawName: string;
-          let fallbackName: string;
-
-          if (mode === 'frame') {
-            rawName = 'PFP';
-            fallbackName = 'HH-Goa-2026-PFP.png';
-          } else {
-            rawName = builderData.name ? `${builderData.name}-Builder-Card` : 'Builder-Card';
-            fallbackName = 'HH-Goa-2026-Builder-Card.png';
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Failed to capture canvas export blob'));
+            return;
           }
 
-          const sanitizedName = sanitizeFilename(rawName, fallbackName);
+          try {
+            // Build and sanitize file name
+            let rawName: string;
+            let fallbackName: string;
 
-          // Save the file
-          downloadBlob(blob, sanitizedName);
-          
-          // Force release canvas memory
-          canvas.width = 0;
-          canvas.height = 0;
-          
-          resolve();
-        } catch (err: any) {
-          reject(new Error(err.message || 'Verification or download failed'));
-        }
-      }, 'image/png');
+            if (mode === 'frame') {
+              rawName = 'PFP';
+              fallbackName = 'HH-Goa-2026-PFP.png';
+            } else {
+              rawName = builderData.name ? `${builderData.name}-Builder-Card` : 'Builder-Card';
+              fallbackName = 'HH-Goa-2026-Builder-Card.png';
+            }
+
+            const sanitizedName = sanitizeFilename(rawName, fallbackName);
+
+            // Save the file
+            downloadBlob(blob, sanitizedName);
+
+            // Force release canvas memory
+            canvas.width = 0;
+            canvas.height = 0;
+
+            resolve();
+          } catch (err: any) {
+            reject(new Error(err.message || 'Download failed'));
+          }
+        },
+        'image/png'
+      );
     });
   }
 }
