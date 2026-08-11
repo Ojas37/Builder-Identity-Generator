@@ -649,11 +649,11 @@ export class PreviewRenderer {
       ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
     }
 
-    // For Bg.png template: circle center is cx=251, cy=321 (in 500px base coords)
-    // The inner circle radius (inside the red ring) is ~152px
-    const portRadius = isBoardingPass ? 138 * scale : 120 * scale;
-    const portCX = isBoardingPass ? 250 * scale : width / 2;
-    const portCY = isBoardingPass ? 324 * scale : 260 * scale;
+    // For Bg.png template: circle center is cx=269, cy=299 (in 500x750 base coords)
+    // The inner circle radius (inside the decorative ring) is ~140px
+    const portRadius = isBoardingPass ? 140 * scale : 120 * scale;
+    const portCX = isBoardingPass ? 269 * scale : width / 2;
+    const portCY = isBoardingPass ? 299 * scale : 260 * scale;
     const portSize = portRadius * 2;
     const portX = portCX - portRadius;
     const portY = portCY - portRadius;

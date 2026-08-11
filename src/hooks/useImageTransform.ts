@@ -61,7 +61,7 @@ export function useImageTransform() {
           finalHeight = 800;
         } else {
           finalWidth = 500;
-          finalHeight = 790;
+          finalHeight = 750;
         }
 
         const config: RenderConfig = {
