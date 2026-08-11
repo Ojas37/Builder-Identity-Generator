@@ -81,7 +81,7 @@ export class ImageExporter {
     if (mode === 'frame') {
       const template =
         pfpTemplates.find((t) => t.id === selectedPFPTemplateId) || pfpTemplates[0];
-      PreviewRenderer.renderFramePreview(canvas, image, crop, rotation, template, config);
+      PreviewRenderer.renderFramePreview(canvas, image, crop, rotation, template, config, { name: builderData.name });
     } else {
       const template =
         builderTemplates.find((t) => t.id === selectedBuilderTemplateId) ||

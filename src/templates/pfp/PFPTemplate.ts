@@ -25,5 +25,5 @@ export interface PFPTemplate {
 
   renderBackground?: (ctx: CanvasRenderingContext2D, config: RenderConfig) => void;
   renderFrame?: (ctx: CanvasRenderingContext2D, config: RenderConfig) => void;
-  renderOverlay?: (ctx: CanvasRenderingContext2D, config: RenderConfig) => void;
+  renderOverlay?: (ctx: CanvasRenderingContext2D, config: RenderConfig, data?: { name?: string }) => void;
 }

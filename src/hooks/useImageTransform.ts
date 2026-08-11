@@ -81,7 +81,8 @@ export function useImageTransform() {
             croppedAreaPixels,
             rotation,
             template,
-            config
+            config,
+            { name: builderData.name }
           );
         } else {
           const template = builderTemplates.find(t => t.id === selectedBuilderTemplateId) || builderTemplates[0];

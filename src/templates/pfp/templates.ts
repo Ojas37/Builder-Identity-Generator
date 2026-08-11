@@ -5,7 +5,7 @@ export const pfpTemplates: PFPTemplate[] = [
   {
     id: 'goa-palms',
     name: 'Goa Palms',
-    description: 'Vibrant jungle green badge, thick gold floral scallops, tropical palm wreath, and pink stamps.',
+    description: 'Vibrant jungle green frame with yellow header banners, tropical side palm trees, gold badges, and bottom taglines.',
     previewColor: '#004d26',
     colors: {
       background: '#004d26',
@@ -26,56 +26,45 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillStyle = '#004d26';
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Draw golden radial sun rays from center
-      const cx = width / 2;
-      const cy = height / 2;
-      ctx.strokeStyle = 'rgba(255, 208, 0, 0.04)';
-      ctx.lineWidth = 1.5 * scale;
-      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + Math.cos(angle) * width, cy + Math.sin(angle) * height);
-        ctx.stroke();
-      }
+      // 2. Draw ornate green backing pattern (concentric arches and rings)
+      ctx.strokeStyle = 'rgba(0, 163, 89, 0.15)';
+      ctx.lineWidth = 2 * scale;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2 + 10 * scale, 320 * scale, 0, Math.PI * 2);
+      ctx.stroke();
 
-      // 3. Draw palm leaf silhouettes in the corners
-      ctx.fillStyle = 'rgba(0, 163, 89, 0.15)';
-      PreviewRenderer.drawPalmTree(ctx, 30 * scale, 30 * scale, 120 * scale, scale, 'rgba(0, 163, 89, 0.15)');
-      PreviewRenderer.drawPalmTree(ctx, width - 30 * scale, 30 * scale, 120 * scale, scale, 'rgba(0, 163, 89, 0.15)');
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2 + 10 * scale, 280 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Curved floral design arcs in background
+      ctx.lineWidth = 1 * scale;
+      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+        ctx.save();
+        ctx.translate(width / 2, height / 2 + 10 * scale);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(210 * scale, 0);
+        ctx.quadraticCurveTo(250 * scale, 30 * scale, 280 * scale, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
     },
     renderFrame(ctx, config) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2;
-      const rad = 260 * scale;
+      const cy = height / 2 + 10 * scale;
+      const rad = 210 * scale; // Circular portrait radius matching centered layout
 
-      // 1. Draw rich tropical palm leaves wreath wrapping around the circle frame
-      ctx.save();
-      ctx.translate(cx, cy);
-      for (let angle = -Math.PI / 3; angle < Math.PI * 1.3; angle += Math.PI / 10) {
-        ctx.save();
-        ctx.rotate(angle);
-        // Draw leaf vein pointing outwards from the circle
-        ctx.strokeStyle = 'rgba(0, 163, 89, 0.4)';
-        ctx.lineWidth = 3 * scale;
-        ctx.beginPath();
-        ctx.moveTo(rad - 5 * scale, 0);
-        ctx.lineTo(rad + 45 * scale, 0);
-        ctx.stroke();
-        
-        // Draw tiny leaf pinnae
-        ctx.fillStyle = '#00a359';
-        for (let offset = rad + 5 * scale; offset < rad + 45 * scale; offset += 8 * scale) {
-          ctx.beginPath();
-          ctx.ellipse(offset, 4 * scale, 6 * scale, 2 * scale, Math.PI / 4, 0, Math.PI * 2);
-          ctx.ellipse(offset, -4 * scale, 6 * scale, 2 * scale, -Math.PI / 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-      ctx.restore();
+      // 1. Draw two large tropical palm trees framing the left and right sides
+      PreviewRenderer.drawPalmTree(ctx, 80 * scale, height, 480 * scale, scale, 'rgba(0, 163, 89, 0.7)');
+      PreviewRenderer.drawPalmTree(ctx, width - 80 * scale, height, 480 * scale, scale, 'rgba(0, 163, 89, 0.7)');
 
-      // 2. Thick gold outer circle frame
+      // Taller golden palm tree outlines
+      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.3)');
+      PreviewRenderer.drawPalmTree(ctx, width - 40 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.3)');
+
+      // 2. Thick gold outer circle frame around photo
       ctx.strokeStyle = '#ffd000';
       ctx.lineWidth = 6 * scale;
       ctx.beginPath();
@@ -85,69 +74,98 @@ export const pfpTemplates: PFPTemplate[] = [
       // 3. Gold scalloped border ring outside the photo frame
       PreviewRenderer.drawScallopedBorder(ctx, cx, cy, rad + 8 * scale, scale);
     },
-    renderOverlay(ctx, config) {
+    renderOverlay(ctx, config, data) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2;
-      const rad = 260 * scale;
+      const cy = height / 2 + 10 * scale;
+      const rad = 210 * scale;
 
-      // 1. Curved text along top and bottom rings (spaced out for legibility)
+      // 1. Top Yellow Header Block (fills width)
+      ctx.fillStyle = '#ffd000';
+      ctx.fillRect(0, 0, width, 80 * scale);
+
+      // Header Text: HACKER HOUSE गोवा
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(20 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('HACKER HOUSE', cx + 25 * scale, 32 * scale);
+
+      // Pink stamp "गोवा" next to header
+      ctx.fillStyle = '#ff007f';
+      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.fillText('गोवा', cx + 35 * scale, 32 * scale);
+
+      // Subtitle below header text
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('GOA, INDIA  •  OCT 28-31  •  HH STUDIO', cx, 58 * scale);
+
+      // 2. Curved gold text around the circular portrait
       PreviewRenderer.drawCurvedText(
         ctx,
-        'HACKER HOUSE GOA 2026',
+        'HACKER HOUSE GOA 2026 ★ BUILD IN GOA',
         cx,
         cy,
-        rad + 25 * scale,
+        rad + 22 * scale,
         -Math.PI / 2,
-        `bold ${Math.round(20 * scale)}px "DM Serif Display", Georgia, serif`,
+        `bold ${Math.round(13 * scale)}px "DM Serif Display", Georgia, serif`,
         '#ffd000',
         scale
       );
 
       PreviewRenderer.drawCurvedText(
         ctx,
-        '★ OCTOBER 28 - 31 , 2026 ★',
+        '★ SHIP FROM PARADISE ★ 28 - 31 OCT 2026',
         cx,
         cy,
-        rad + 25 * scale,
+        rad + 22 * scale,
         Math.PI / 2,
-        `bold ${Math.round(11 * scale)}px "Fira Code", monospace`,
-        '#ffffff',
+        `bold ${Math.round(9 * scale)}px "Fira Code", monospace`,
+        '#ffd000',
         scale,
         true
       );
 
-      // 2. Vintage pink Devanagari stamp "गोवा" in bottom-right corner
-      const stampRadius = 30 * scale;
-      const stampX = cx + rad - 12 * scale;
-      const stampY = cy + rad - 12 * scale;
+      // 3. User Name Tag Badge overlapping bottom of circle
+      const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
+      ctx.fillStyle = '#002612'; // Dark green pill background
+      ctx.strokeStyle = '#ffd000'; // Gold border
+      ctx.lineWidth = 2 * scale;
+      
+      ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
+      const tw = ctx.measureText(nameText).width + 30 * scale;
+      const bH = 26 * scale;
+      const bY = cy + rad - bH / 2;
 
-      ctx.save();
-      ctx.translate(stampX, stampY);
-      ctx.rotate(-12 * Math.PI / 180);
-
-      // Draw outer circle with glowing shadow
-      ctx.shadowColor = 'rgba(255, 0, 127, 0.4)';
-      ctx.shadowBlur = 8 * scale;
-      ctx.strokeStyle = '#ff007f';
-      ctx.lineWidth = 2.5 * scale;
       ctx.beginPath();
-      ctx.arc(0, 0, stampRadius, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.shadowBlur = 0; // Reset shadow
-
-      ctx.lineWidth = 1 * scale;
-      ctx.beginPath();
-      ctx.arc(0, 0, stampRadius - 4 * scale, 0, Math.PI * 2);
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(cx - tw / 2, bY, tw, bH, 6 * scale);
+      } else {
+        ctx.rect(cx - tw / 2, bY, tw, bH);
+      }
+      ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('गोवा', 0, 0);
+      ctx.fillText(nameText, cx, bY + bH / 2);
 
-      ctx.restore();
+      // 4. Bottom Semi-transparent Footer block
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, height - 55 * scale, width, 55 * scale);
+
+      ctx.fillStyle = '#ffd000';
+      ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('#FrameInGoa', cx, height - 32 * scale);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.font = `${Math.round(7.5 * scale)}px "Fira Code", monospace`;
+      ctx.fillText('hhgoa.com  •  Oct 28-31, 2026  •  Goa, India', cx, height - 15 * scale);
     },
   },
   {

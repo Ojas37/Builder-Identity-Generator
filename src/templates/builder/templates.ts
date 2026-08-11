@@ -23,18 +23,18 @@ const getRarityProfile = (name: string) => {
 export const builderTemplates: BuilderTemplate[] = [
   {
     id: 'goa-boarding-pass',
-    name: 'Goa Boarding Pass',
-    description: 'Cream ticket stub with coconut palms, beach huts, scalloped photo frames, and stamps.',
-    previewColor: '#f4f1ea',
+    name: 'Goa Palms',
+    description: 'Vibrant poster with vintage postage stamps, surfboards, beach huts, and custom credentials.',
+    previewColor: '#fdfcf7',
     colors: {
-      backgroundStart: '#f4f1ea',
-      backgroundEnd: '#f4f1ea',
-      primary: '#006c35',
-      secondary: '#ffd000',
+      backgroundStart: '#fdfcf7',
+      backgroundEnd: '#fdfcf7',
+      primary: '#004d26',
+      secondary: '#00a359',
       accent: '#ff007f',
-      text: '#006c35',
-      badgeBg: '#ffffff',
-      badgeText: '#ffd000',
+      text: '#004d26',
+      badgeBg: '#004d26',
+      badgeText: '#ffffff',
     },
     typography: {
       heading: '"DM Serif Display", Georgia, serif',
@@ -44,224 +44,417 @@ export const builderTemplates: BuilderTemplate[] = [
     renderBackground(ctx, config) {
       const { width, height, scale } = config;
 
-      // Draw cream card base background (full card height)
-      ctx.fillStyle = '#f4f1ea';
-      ctx.fillRect(10 * scale, 10 * scale, width - 20 * scale, height - 20 * scale);
+      // Draw cream card base background
+      ctx.fillStyle = '#fdfcf7';
+      ctx.fillRect(0, 0, width, height);
 
-      // Perforated tear-off stub divider line (dotted) from y = 30 to height - 30
-      ctx.strokeStyle = '#006c35';
-      ctx.lineWidth = 2 * scale;
-      ctx.setLineDash([4 * scale, 4 * scale]);
-      ctx.beginPath();
-      ctx.moveTo(330 * scale, 30 * scale);
-      ctx.lineTo(330 * scale, height - 30 * scale);
-      ctx.stroke();
-      ctx.setLineDash([]); // Reset dash settings
-
-      // Draw top and bottom punch hole circles cut out from the card
-      ctx.fillStyle = '#030712'; // Matches outer body canvas backdrop
-      ctx.beginPath();
-      ctx.arc(330 * scale, 0, 10 * scale, 0, Math.PI * 2);
-      ctx.arc(330 * scale, height, 10 * scale, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Outer thin ticket border (full card height)
-      ctx.strokeStyle = '#006c35';
+      // Draw thin double dark-green border frame around card edge
+      ctx.strokeStyle = '#004d26';
       ctx.lineWidth = 1.5 * scale;
       ctx.strokeRect(10 * scale, 10 * scale, width - 20 * scale, height - 20 * scale);
+      ctx.strokeRect(13 * scale, 13 * scale, width - 26 * scale, height - 26 * scale);
     },
     renderOverlay(ctx, config, data) {
-      const { height, scale } = config;
+      const { width, height, scale } = config;
+      const cx = width / 2;
 
-      // 1. Draw top brand logo header inside the left section
-      ctx.fillStyle = '#006c35';
-      ctx.font = `bold ${Math.round(18 * scale)}px "DM Serif Display", Georgia, serif`;
+      // 1. Draw top brand ticket slot badge
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(205 * scale, 10 * scale, 90 * scale, 35 * scale, [0, 0, 8 * scale, 8 * scale]);
+      } else {
+        ctx.rect(205 * scale, 10 * scale, 90 * scale, 35 * scale);
+      }
+      ctx.fill();
+
+      // Top stamp palm tree icon
+      PreviewRenderer.drawPalmTree(ctx, 250 * scale, 24 * scale, 12 * scale, scale, '#ffd000');
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('HH GOA 2026', 250 * scale, 36 * scale);
+
+      // 2. Draw Main Title: HACKER गोवा HOUSE
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(28 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.textAlign = 'right';
+      ctx.fillText('HACKER', 215 * scale, 85 * scale);
+
       ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('HACKER HOUSE GOA', 30 * scale, 65 * scale);
+      ctx.fillText('HOUSE', 285 * scale, 85 * scale);
 
-      // Draw Devanagari stamp next to header
-      ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(15 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('गोवा', 240 * scale, 65 * scale);
-
-      // 2. Draw golden scalloped floral border around circular photo frame
-      PreviewRenderer.drawScallopedBorder(ctx, 165 * scale, 270 * scale, 100 * scale, scale);
-
-      // 3. Draw Yellow/White Title Badge under the circular portrait
-      const badgeText = (data.title || 'BUILDER').toUpperCase();
-      ctx.fillStyle = '#ffffff'; // White fill
-      ctx.strokeStyle = '#ffd000'; // Yellow border
-      ctx.lineWidth = 1.5 * scale;
+      // Draw middle 'गोवा' text block with a pink background and yellow outline
+      ctx.save();
+      ctx.translate(250 * scale, 80 * scale);
+      ctx.rotate(-8 * Math.PI / 180);
       
-      ctx.font = `bold ${Math.round(10 * scale)}px "Fira Code", monospace`;
-      const tw = ctx.measureText(badgeText).width;
-      const bW = tw + 24 * scale;
-      const bH = 24 * scale;
-      const bX = 165 * scale - bW / 2;
-      const bY = 390 * scale;
-
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(bX, bY, bW, bH, 12 * scale);
-      } else {
-        ctx.rect(bX, bY, bW, bH);
-      }
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffd000'; // Yellow text
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(badgeText, 165 * scale, bY + 13 * scale);
-
-      // 4. Fill the blank space in the middle stub with stacked 'BUILD', 'SHIP', 'REPEAT' buttons & beach hut scenery
-      // Vertical stacked banners (left-middle of left stub)
-      const tabX = 50 * scale;
-      ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      // 'BUILD' Tab (Green)
-      ctx.fillStyle = '#006c35';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(tabX, 445 * scale, 65 * scale, 20 * scale, 4 * scale);
-      } else {
-        ctx.rect(tabX, 445 * scale, 65 * scale, 20 * scale);
-      }
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('BUILD', tabX + 32.5 * scale, 455 * scale);
-
-      // 'SHIP' Tab (Pink)
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(tabX, 475 * scale, 65 * scale, 20 * scale, 4 * scale);
-      } else {
-        ctx.rect(tabX, 475 * scale, 65 * scale, 20 * scale);
-      }
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('SHIP', tabX + 32.5 * scale, 485 * scale);
-
-      // 'REPEAT' Tab (Yellow)
       ctx.fillStyle = '#ffd000';
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(tabX, 505 * scale, 65 * scale, 20 * scale, 4 * scale);
+        ctx.roundRect(-24 * scale, -15 * scale, 48 * scale, 26 * scale, 4 * scale);
       } else {
-        ctx.rect(tabX, 505 * scale, 65 * scale, 20 * scale);
+        ctx.rect(-24 * scale, -15 * scale, 48 * scale, 26 * scale);
       }
       ctx.fill();
-      ctx.fillStyle = '#006c35';
-      ctx.fillText('REPEAT', tabX + 32.5 * scale, 515 * scale);
 
-      // Beach Hut Scenery (right-middle of left stub)
-      ctx.fillStyle = 'rgba(0, 108, 53, 0.04)';
+      ctx.fillStyle = '#ff007f';
       ctx.beginPath();
-      ctx.ellipse(220 * scale, 510 * scale, 55 * scale, 15 * scale, 0, 0, Math.PI * 2);
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(-22 * scale, -13 * scale, 44 * scale, 22 * scale, 3 * scale);
+      } else {
+        ctx.rect(-22 * scale, -13 * scale, 44 * scale, 22 * scale);
+      }
       ctx.fill();
 
-      // Beach Hut
-      PreviewRenderer.drawBeachHut(ctx, 185 * scale, 460 * scale, 1.25 * scale);
-
-      // Palm Tree behind Beach Hut
-      PreviewRenderer.drawPalmTree(ctx, 255 * scale, 510 * scale, 85 * scale, scale, '#006c35');
-
-      // 5. Draw Hacker House Slogan centered underneath the scenery
-      ctx.fillStyle = '#006c35';
-      ctx.font = `italic bold ${Math.round(13 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(13 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('LESS NOISE. MORE SIGNAL.', 165 * scale, 570 * scale);
-
-      // 6. Bottom Palm Tree and Credentials footer
-      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 55 * scale, 75 * scale, scale, '#006c35');
-      ctx.fillStyle = 'rgba(0, 108, 53, 0.08)';
-      ctx.beginPath();
-      ctx.ellipse(80 * scale, height - 55 * scale, 60 * scale, 12 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#006c35';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
-      ctx.textAlign = 'left';
-      ctx.fillText('STATION: GOA_SAND', 145 * scale, height - 70 * scale);
-      ctx.fillText('DATE: 28-31 OCT, 2026', 145 * scale, height - 52 * scale);
-
-      // 7. Draw vertical meta banner along the left side
-      ctx.save();
-      ctx.translate(25 * scale, height / 2);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillStyle = 'rgba(0, 108, 53, 0.4)';
-      ctx.font = `500 ${Math.round(9 * scale)}px "Fira Code", monospace`;
-      ctx.textAlign = 'center';
-      ctx.fillText('28 - 31 OCT 2026 // BUILDER PASS', 0, 0);
+      ctx.fillText('गोवा', 0, 0);
       ctx.restore();
 
-      // Perforated stub (right side layout): Event flight information
-      const stubX = 350 * scale;
+      // 3. Draw Vintage stamps in top left and top right corners
+      // Top Left: GOA INDIA postage stamp (rotated rect)
+      ctx.save();
+      ctx.translate(50 * scale, 75 * scale);
+      ctx.rotate(-10 * Math.PI / 180);
       
-      // Section titles
-      ctx.fillStyle = '#006c35';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('PASSENGER', stubX, 80 * scale);
-      ctx.fillText('FLIGHT ID', stubX, 140 * scale);
-      ctx.fillText('GATE', stubX, 200 * scale);
-      ctx.fillText('SEAT CLASS', stubX, 260 * scale);
-
-      // Section data values
-      ctx.fillStyle = '#1e293b';
-      ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
-      
-      const splitName = (data.name || 'YOUR NAME').trim().toUpperCase();
-      let passengerFont = 11;
-      ctx.font = `bold ${Math.round(passengerFont * scale)}px "Fira Code", monospace`;
-      while (ctx.measureText(splitName).width > 120 * scale && passengerFont > 8) {
-        passengerFont -= 1;
-        ctx.font = `bold ${Math.round(passengerFont * scale)}px "Fira Code", monospace`;
+      // Draw stamp jagged perforations
+      ctx.fillStyle = '#004d26';
+      ctx.fillRect(-27 * scale, -37 * scale, 54 * scale, 74 * scale);
+      ctx.fillStyle = '#fdfcf7';
+      for (let y = -34 * scale; y <= 34 * scale; y += 8 * scale) {
+        ctx.beginPath();
+        ctx.arc(-27 * scale, y, 3 * scale, 0, Math.PI * 2);
+        ctx.arc(27 * scale, y, 3 * scale, 0, Math.PI * 2);
+        ctx.fill();
       }
-      ctx.fillText(splitName, stubX, 100 * scale);
-      
-      ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
-      ctx.fillText('HH-2026', stubX, 160 * scale);
-      ctx.fillText('GOA_SAND', stubX, 220 * scale);
-      
-      const splitTitle = (data.title || 'BUILDER').trim().toUpperCase();
-      let titleFont = 11;
-      ctx.font = `bold ${Math.round(titleFont * scale)}px "Fira Code", monospace`;
-      while (ctx.measureText(splitTitle).width > 120 * scale && titleFont > 8) {
-        titleFont -= 1;
-        ctx.font = `bold ${Math.round(titleFont * scale)}px "Fira Code", monospace`;
-      }
-      ctx.fillText(splitTitle, stubX, 280 * scale);
-
-      // Mock QR code inside the right stub
-      const qrSize = 105 * scale;
-      const qrX = stubX;
-      const qrY = 330 * scale;
-      PreviewRenderer.drawQRCode(ctx, qrX, qrY, qrSize, '#006c35');
-
-      // Barcode on the right stub footer
-      const barcodeX = stubX;
-      const barcodeY = height - 100 * scale;
-      const barcodeH = 35 * scale;
-      
-      ctx.fillStyle = '#006c35';
-      let currentX = barcodeX;
-      const linePattern = [2, 4, 1, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 2];
-      for (let i = 0; i < linePattern.length; i++) {
-        const w = linePattern[i] * scale;
-        ctx.fillRect(currentX, barcodeY, w, barcodeH);
-        currentX += w + 2 * scale;
+      for (let x = -24 * scale; x <= 24 * scale; x += 8 * scale) {
+        ctx.beginPath();
+        ctx.arc(x, -37 * scale, 3 * scale, 0, Math.PI * 2);
+        ctx.arc(x, 37 * scale, 3 * scale, 0, Math.PI * 2);
+        ctx.fill();
       }
 
-      // Draw pink ID_BUILDER tag under barcode
-      ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
+      // Stamp interior
+      ctx.fillStyle = '#004d26';
+      ctx.fillRect(-23 * scale, -33 * scale, 46 * scale, 66 * scale);
+      
+      ctx.strokeStyle = '#fdfcf7';
+      ctx.lineWidth = 1 * scale;
+      ctx.strokeRect(-21 * scale, -31 * scale, 42 * scale, 62 * scale);
+
+      ctx.fillStyle = '#ffd000';
+      ctx.font = `bold ${Math.round(6 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('ID_BUILDER', stubX + (qrSize / 2), barcodeY + barcodeH + 15 * scale);
+      ctx.fillText('GOA', 0, -22 * scale);
+      ctx.fillText('INDIA', 0, 26 * scale);
+
+      // Draw micro palm & sunset inside stamp
+      ctx.beginPath();
+      ctx.arc(0, 5 * scale, 12 * scale, Math.PI, 0);
+      ctx.fill();
+      PreviewRenderer.drawPalmTree(ctx, 0, 8 * scale, 22 * scale, scale, '#004d26');
+
+      ctx.restore();
+
+      // Top Right: Circular seal: "BUILD IN GOA * SHIP FROM PARADISE"
+      ctx.save();
+      ctx.translate(435 * scale, 85 * scale);
+      ctx.strokeStyle = '#004d26';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.beginPath();
+      ctx.arc(0, 0, 36 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      PreviewRenderer.drawCurvedText(
+        ctx,
+        'BUILD IN GOA ★ SHIP FROM PARADISE',
+        435 * scale,
+        85 * scale,
+        28 * scale,
+        -Math.PI / 2,
+        `bold ${Math.round(5.5 * scale)}px "Fira Code", monospace`,
+        '#004d26',
+        scale
+      );
+      PreviewRenderer.drawPalmTree(ctx, 0, 15 * scale, 34 * scale, scale, '#004d26');
+      ctx.restore();
+
+      // 4. Draw Center portrait framing (gold scalloped ring with red triangle teeth inside)
+      const pcy = 285 * scale;
+      const prad = 80 * scale;
+      PreviewRenderer.drawScallopedBorder(ctx, cx, pcy, prad, scale);
+
+      // Red inner teeth ring
+      ctx.strokeStyle = '#ff007f';
+      ctx.lineWidth = 2 * scale;
+      ctx.beginPath();
+      ctx.arc(cx, pcy, prad - 4 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 5. Draw Left Stub Graphics (Signpost & Surfboards)
+      // Brown wooden post
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(63 * scale, 280 * scale, 4 * scale, 180 * scale);
+      
+      // BUILD Sign (Yellow)
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      ctx.moveTo(35 * scale, 350 * scale);
+      ctx.lineTo(82 * scale, 350 * scale);
+      ctx.lineTo(92 * scale, 360 * scale);
+      ctx.lineTo(82 * scale, 370 * scale);
+      ctx.lineTo(35 * scale, 370 * scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.fillText('BUILD', 55 * scale, 362 * scale);
+
+      // SHIP Sign (Pink)
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.moveTo(95 * scale, 385 * scale);
+      ctx.lineTo(48 * scale, 385 * scale);
+      ctx.lineTo(38 * scale, 395 * scale);
+      ctx.lineTo(48 * scale, 405 * scale);
+      ctx.lineTo(95 * scale, 405 * scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('SHIP', 70 * scale, 397 * scale);
+
+      // REPEAT Sign (Green)
+      ctx.fillStyle = '#00a359';
+      ctx.beginPath();
+      ctx.moveTo(35 * scale, 420 * scale);
+      ctx.lineTo(82 * scale, 420 * scale);
+      ctx.lineTo(92 * scale, 430 * scale);
+      ctx.lineTo(82 * scale, 440 * scale);
+      ctx.lineTo(35 * scale, 440 * scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('REPEAT', 55 * scale, 432 * scale);
+
+      // Surfboards resting at the bottom left
+      // Yellow surfboard
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      ctx.ellipse(32 * scale, 475 * scale, 12 * scale, 35 * scale, -10 * Math.PI / 180, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#004d26';
+      ctx.lineWidth = 1 * scale;
+      ctx.stroke();
+
+      // Pink surfboard
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.ellipse(50 * scale, 478 * scale, 12 * scale, 32 * scale, 8 * Math.PI / 180, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // 6. Draw Right Stub Graphics (Red beach house cottage & Vespa scooter)
+      // Beach house cottage
+      const hx = 390 * scale;
+      const hy = 360 * scale;
+      // Roof
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.moveTo(hx, hy);
+      ctx.lineTo(hx + 35 * scale, hy - 25 * scale);
+      ctx.lineTo(hx + 70 * scale, hy);
+      ctx.closePath();
+      ctx.fill();
+      // Body
+      ctx.fillStyle = '#ffd000';
+      ctx.fillRect(hx + 8 * scale, hy, 54 * scale, 45 * scale);
+      // Windows
+      ctx.fillStyle = '#004d26';
+      ctx.fillRect(hx + 18 * scale, hy + 12 * scale, 10 * scale, 12 * scale);
+      ctx.fillRect(hx + 42 * scale, hy + 12 * scale, 10 * scale, 12 * scale);
+      // Door
+      ctx.fillStyle = '#ff007f';
+      ctx.fillRect(hx + 30 * scale, hy + 28 * scale, 10 * scale, 17 * scale);
+
+      // Vespa scooter parked in front of cottage
+      const vx = hx + 55 * scale;
+      const vy = hy + 45 * scale;
+      // Wheels
+      ctx.fillStyle = '#004d26';
+      ctx.beginPath();
+      ctx.arc(vx, vy, 5 * scale, 0, Math.PI * 2);
+      ctx.arc(vx + 14 * scale, vy, 5 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      // Body
+      ctx.fillStyle = '#ff007f';
+      ctx.fillRect(vx, vy - 8 * scale, 14 * scale, 6 * scale);
+      ctx.beginPath();
+      ctx.moveTo(vx, vy - 2 * scale);
+      ctx.lineTo(vx - 2 * scale, vy - 12 * scale);
+      ctx.lineTo(vx + 4 * scale, vy - 12 * scale);
+      ctx.closePath();
+      ctx.fill();
+
+      // Yellow bubble: "LET'S BUILD!"
+      ctx.save();
+      ctx.translate(415 * scale, 310 * scale);
+      ctx.rotate(12 * Math.PI / 180);
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(-30 * scale, -10 * scale, 60 * scale, 20 * scale, 6 * scale);
+      } else {
+        ctx.rect(-30 * scale, -10 * scale, 60 * scale, 20 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(7 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText("LET'S BUILD!", 0, 0);
+      ctx.restore();
+
+      // 7. User Details Banners (Name and Role)
+      // Name Badge
+      ctx.fillStyle = '#004d26';
+      ctx.beginPath();
+      const nameText = (data.name || 'YOUR NAME').toUpperCase();
+      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+      const nameW = ctx.measureText(nameText).width + 40 * scale;
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(cx - nameW / 2, 385 * scale, nameW, 30 * scale, 6 * scale);
+      } else {
+        ctx.rect(cx - nameW / 2, 385 * scale, nameW, 30 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(nameText, cx, 400 * scale);
+
+      // Role Pill Badge
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      const roleText = `⚡ ${(data.role || 'STACK / ROLE').toUpperCase()} ⚡`;
+      ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
+      const roleW = ctx.measureText(roleText).width + 30 * scale;
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(cx - roleW / 2, 422 * scale, roleW, 18 * scale, 99);
+      } else {
+        ctx.rect(cx - roleW / 2, 422 * scale, roleW, 18 * scale);
+      }
+      ctx.fill();
+      ctx.fillStyle = '#ff007f';
+      ctx.fillText(roleText, cx, 431 * scale);
+
+      // 8. Bottom 3-Column Ticket layout
+      const colY = 485 * scale;
+      
+      // Draw grid vertical separator lines
+      ctx.strokeStyle = 'rgba(0, 77, 38, 0.1)';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      ctx.moveTo(165 * scale, colY - 5 * scale);
+      ctx.lineTo(165 * scale, colY + 140 * scale);
+      ctx.moveTo(330 * scale, colY - 5 * scale);
+      ctx.lineTo(330 * scale, colY + 140 * scale);
+      ctx.stroke();
+
+      // Column 1: BUILDER CLASS
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('✦ BUILDER CLASS ✦', 97.5 * scale, colY + 10 * scale);
+      
+      ctx.fillStyle = '#ff007f';
+      ctx.font = `bold ${Math.round(11 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.fillText((data.title || 'BUILDER').toUpperCase(), 97.5 * scale, colY + 28 * scale);
+
+      // Green QR code with mini palm tree inside
+      PreviewRenderer.drawQRCode(ctx, 55 * scale, colY + 38 * scale, 85 * scale, '#004d26');
+      PreviewRenderer.drawPalmTree(ctx, 97.5 * scale, colY + 98 * scale, 18 * scale, scale, '#ffd000');
+
+      // Column 2: BEACH BAG
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.fillText('✦ BEACH BAG ✦', 250 * scale, colY + 10 * scale);
+
+      ctx.font = `bold ${Math.round(8 * scale)}px "Fira Code", monospace`;
+      ctx.textAlign = 'left';
+      
+      // Item 1: Coconut
+      PreviewRenderer.drawPalmTree(ctx, 195 * scale, colY + 30 * scale, 12 * scale, scale, '#00a359');
+      ctx.fillText('COCONUT', 215 * scale, colY + 33 * scale);
+
+      // Item 2: VS Code
+      ctx.fillStyle = '#ff007f';
+      ctx.fillText('< />', 195 * scale, colY + 53 * scale);
+      ctx.fillStyle = '#004d26';
+      ctx.fillText('VS CODE', 215 * scale, colY + 53 * scale);
+
+      // Item 3: Lo-Fi Beats
+      ctx.strokeStyle = '#ffd000';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.beginPath();
+      ctx.arc(195 * scale, colY + 70 * scale, 5 * scale, Math.PI, 0);
+      ctx.stroke();
+      ctx.fillStyle = '#004d26';
+      ctx.fillText('LO-FI BEATS', 215 * scale, colY + 73 * scale);
+
+      // Sunset Ocean illustration at the bottom of Column 2
+      ctx.fillStyle = '#ffd000';
+      ctx.beginPath();
+      ctx.arc(250 * scale, colY + 130 * scale, 16 * scale, Math.PI, 0);
+      ctx.fill();
+      // Wave horizontal lines
+      ctx.strokeStyle = '#004d26';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      ctx.moveTo(210 * scale, colY + 132 * scale);
+      ctx.lineTo(290 * scale, colY + 132 * scale);
+      ctx.moveTo(225 * scale, colY + 136 * scale);
+      ctx.lineTo(275 * scale, colY + 136 * scale);
+      ctx.stroke();
+
+      // Column 3: CURRENTLY SHIPPING
+      ctx.fillStyle = '#004d26';
+      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('✦ CURRENTLY SHIPPING ✦', 402.5 * scale, colY + 10 * scale);
+
+      ctx.fillStyle = '#ff007f';
+      ctx.font = `bold ${Math.round(11 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.fillText('BUILDING THE FUTURE', 402.5 * scale, colY + 28 * scale);
+
+      // Barcode
+      const barcodeX = 350 * scale;
+      const barcodeY = colY + 55 * scale;
+      const barcodeH = 30 * scale;
+      ctx.fillStyle = '#004d26';
+      let currX = barcodeX;
+      const pattern = [2, 4, 1, 3, 2, 1, 4, 2, 3, 1, 2];
+      for (let i = 0; i < pattern.length; i++) {
+        const w = pattern[i] * scale;
+        ctx.fillRect(currX, barcodeY, w, barcodeH);
+        currX += w + 2 * scale;
+      }
+
+      ctx.fillStyle = '#004d26';
+      ctx.font = `${Math.round(7 * scale)}px "Fira Code", monospace`;
+      ctx.fillText('BUILDER ID', 402.5 * scale, colY + 102 * scale);
+      ctx.fillText('#HH-GOA-7757', 402.5 * scale, colY + 114 * scale);
+
+      // 9. Bottom Pink Ribbon "#FRAMEINGOA"
+      ctx.fillStyle = '#ff007f';
+      ctx.fillRect(30 * scale, height - 50 * scale, width - 60 * scale, 24 * scale);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('#FRAMEINGOA', cx, height - 35 * scale);
     },
   },
   {

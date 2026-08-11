@@ -512,7 +512,8 @@ export class PreviewRenderer {
     crop: Area | null,
     rotation: number,
     template: PFPTemplate,
-    config: RenderConfig
+    config: RenderConfig,
+    data?: { name?: string }
   ): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2d context');
@@ -571,7 +572,7 @@ export class PreviewRenderer {
 
     // 4. Render custom overlays (text, stamps, logos)
     if (template.renderOverlay) {
-      template.renderOverlay(ctx, config);
+      template.renderOverlay(ctx, config, data);
     } else {
       ctx.fillStyle = template.colors.text;
       ctx.font = `bold ${Math.round(16 * scale)}px ${template.typography.heading}`;
@@ -645,9 +646,9 @@ export class PreviewRenderer {
 
     // 4. Draw User Portrait (circular crop frame layout for Goa Boarding Pass, rounded square otherwise)
     const isBoardingPass = template.id === 'goa-boarding-pass';
-    const portSize = isBoardingPass ? 200 * scale : 240 * scale;
-    const portX = isBoardingPass ? 65 * scale : (width - portSize) / 2;
-    const portY = isBoardingPass ? 170 * scale : 140 * scale;
+    const portSize = isBoardingPass ? 160 * scale : 240 * scale;
+    const portX = isBoardingPass ? 170 * scale : (width - portSize) / 2;
+    const portY = isBoardingPass ? 205 * scale : 140 * scale;
 
     ctx.save();
     if (isBoardingPass) {
