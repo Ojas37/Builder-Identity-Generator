@@ -521,6 +521,8 @@ export class PreviewRenderer {
     canvas.width = width;
     canvas.height = height;
 
+    const borderSize = (template.borderWidth || 36) * scale;
+
     // 1. Render template background
     if (template.renderBackground) {
       template.renderBackground(ctx, config);
@@ -529,19 +531,31 @@ export class PreviewRenderer {
       ctx.fillRect(0, 0, width, height);
     }
 
-    // 2. Draw portrait photo (circular frame crop for Boarding Stamp template, square otherwise)
-    const borderSize = (template.borderWidth || 36) * scale;
-    const imageSizeW = width - borderSize * 2;
-    const imageSizeH = height - borderSize * 2;
-    
+    // 2. Draw portrait photo inside template-specific masks
     ctx.save();
-    if (template.id === 'boarding-stamp') {
-      // Draw circular clip path in center
+    if (template.id === 'goa-palms' || template.id === 'boarding-stamp') {
+      const cx = width / 2;
+      const cy = height / 2;
+      const rad = 260 * scale;
       ctx.beginPath();
-      ctx.arc(width / 2, height / 2, imageSizeW / 2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.clip();
-      this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
+      this.drawCroppedImage(ctx, image, crop, rotation, cx - rad, cy - rad, rad * 2, rad * 2);
+    } else if (template.id === 'cyber-terminal') {
+      const size = 560 * scale;
+      const rx = (width - size) / 2;
+      const ry = (height - size) / 2;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(rx, ry, size, size, 24 * scale);
+      } else {
+        ctx.rect(rx, ry, size, size);
+      }
+      ctx.clip();
+      this.drawCroppedImage(ctx, image, crop, rotation, rx, ry, size, size);
     } else {
+      const imageSizeW = width - borderSize * 2;
+      const imageSizeH = height - borderSize * 2;
       this.drawCroppedImage(ctx, image, crop, rotation, borderSize, borderSize, imageSizeW, imageSizeH);
     }
     ctx.restore();
