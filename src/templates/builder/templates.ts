@@ -1,5 +1,10 @@
 import type { BuilderTemplate } from './BuilderTemplate';
 import { PreviewRenderer } from '../../canvas/PreviewRenderer';
+import bgImageUrl from '../../assets/Bg.png';
+
+// Pre-load the card background into the cache as soon as this module is imported
+// so it's always available synchronously when renderBackground runs.
+PreviewRenderer.preloadImage(bgImageUrl);
 
 // Helper to deterministically calculate a rarity profile based on name string
 const getRarityProfile = (name: string) => {
@@ -56,10 +61,12 @@ export const builderTemplates: BuilderTemplate[] = [
     renderBackground(ctx, config) {
       const { width, height } = config;
       // Draw the high-fidelity professional card template illustration (Bg.png)
-      const bgImg = PreviewRenderer.getCachedImage('/Bg.png');
+      const bgImg = PreviewRenderer.getCachedImage(bgImageUrl);
       if (bgImg) {
         ctx.drawImage(bgImg, 0, 0, width, height);
       } else {
+        // Kick off a background preload for the next render cycle
+        PreviewRenderer.preloadImage(bgImageUrl);
         ctx.fillStyle = '#fdfcf7';
         ctx.fillRect(0, 0, width, height);
       }

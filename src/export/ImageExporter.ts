@@ -7,6 +7,7 @@ import { pfpTemplates } from '../templates/pfp/templates';
 import { builderTemplates } from '../templates/builder/templates';
 import type { Area, BuilderData } from '../context/GeneratorContext';
 import type { RenderConfig } from './exportTypes';
+import bgImageUrl from '../assets/Bg.png';
 
 export interface ExportState {
   uploadedImage: string;
@@ -81,8 +82,9 @@ export class ImageExporter {
     if (mode === 'frame' && selectedPFPTemplateId === 'goa-palms') {
       await PreviewRenderer.preloadImage('/goa-bg.png');
     }
-    if (mode === 'builder' && selectedBuilderTemplateId === 'goa-boarding-pass') {
-      await PreviewRenderer.preloadImage('/Bg.png');
+    // Always preload Bg.png for builder mode (used by goa-boarding-pass template)
+    if (mode === 'builder') {
+      await PreviewRenderer.preloadImage(bgImageUrl);
     }
 
     // 4. Render composition on canvas

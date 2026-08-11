@@ -5,6 +5,7 @@ import { createImage } from '../utils/image';
 import { pfpTemplates } from '../templates/pfp/templates';
 import { builderTemplates } from '../templates/builder/templates';
 import type { RenderConfig } from '../export/exportTypes';
+import bgImageUrl from '../assets/Bg.png';
 
 export function useImageTransform() {
   const {
@@ -76,8 +77,9 @@ export function useImageTransform() {
         if (previewMode === 'frame' && selectedPFPTemplateId === 'goa-palms') {
           await PreviewRenderer.preloadImage('/goa-bg.png');
         }
-        if (previewMode === 'builder' && selectedBuilderTemplateId === 'goa-boarding-pass') {
-          await PreviewRenderer.preloadImage('/Bg.png');
+        // Always preload Bg.png for builder mode (used by goa-boarding-pass template)
+        if (previewMode === 'builder') {
+          await PreviewRenderer.preloadImage(bgImageUrl);
         }
 
         // 3. Render directly using the PreviewRenderer with chosen template
