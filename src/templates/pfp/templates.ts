@@ -183,8 +183,8 @@ export const pfpTemplates: PFPTemplate[] = [
     renderFrame(ctx, config) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2;
-      const rad = 260 * scale;
+      const cy = height / 2 + 10 * scale;
+      const rad = 190 * scale;
 
       // 1. Draw palm tree graphics in bottom corners (larger)
       PreviewRenderer.drawPalmTree(ctx, 50 * scale, height - 30 * scale, 150 * scale, scale, '#006c35');
@@ -216,11 +216,11 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.stroke();
       ctx.setLineDash([]);
     },
-    renderOverlay(ctx, config) {
+    renderOverlay(ctx, config, data) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2;
-      const rad = 260 * scale;
+      const cy = height / 2 + 10 * scale;
+      const rad = 190 * scale;
 
       // 1. Top Event Heading text (very large)
       ctx.fillStyle = '#006c35';
@@ -246,7 +246,28 @@ export const pfpTemplates: PFPTemplate[] = [
         scale
       );
 
-      // 3. Postmark stamp at bottom right (large)
+      // 3. Passenger Ticket label at the bottom of the circle
+      const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
+      ctx.fillStyle = '#fcfaf5'; // Cream ticket background
+      ctx.strokeStyle = '#006c35'; // Green border
+      ctx.lineWidth = 2 * scale;
+      
+      ctx.font = `bold ${Math.round(14 * scale)}px "Fira Code", monospace`;
+      const tw = ctx.measureText(`PASS: ${nameText}`).width + 30 * scale;
+      const bH = 30 * scale;
+      const bY = cy + rad - bH / 2;
+
+      ctx.beginPath();
+      ctx.rect(cx - tw / 2, bY, tw, bH);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#006c35';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`PASS: ${nameText}`, cx, bY + bH / 2);
+
+      // 4. Postmark stamp at bottom right (large)
       PreviewRenderer.drawPostmarkStamp(ctx, width - 110 * scale, height - 125 * scale, 50 * scale, 'GOA 2026', '#006c35', scale);
     },
   },
@@ -300,9 +321,13 @@ export const pfpTemplates: PFPTemplate[] = [
     },
     renderFrame(ctx, config) {
       const { width, height, scale } = config;
-      const size = 560 * scale;
-      const rx = (width - size) / 2;
-      const ry = (height - size) / 2;
+      const cx = width / 2;
+      const cy = height / 2 + 20 * scale;
+      const rad = 200 * scale;
+
+      const rx = cx - rad;
+      const ry = cy - rad;
+      const size = rad * 2;
 
       // 1. Neon glowing outline around the central portrait (bold)
       ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
@@ -310,11 +335,7 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 5 * scale;
       ctx.beginPath();
-      if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(rx, ry, size, size, 24 * scale);
-      } else {
-        ctx.rect(rx, ry, size, size);
-      }
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.stroke();
       ctx.shadowBlur = 0; // Reset shadow
 
@@ -352,11 +373,15 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.lineTo(rx + size + offset, ry + size + offset - len);
       ctx.stroke();
     },
-    renderOverlay(ctx, config) {
+    renderOverlay(ctx, config, data) {
       const { width, height, scale } = config;
-      const size = 560 * scale;
-      const rx = (width - size) / 2;
-      const ry = (height - size) / 2;
+      const cx = width / 2;
+      const cy = height / 2 + 20 * scale;
+      const rad = 200 * scale;
+
+      const rx = cx - rad;
+      const ry = cy - rad;
+      const size = rad * 2;
 
       // 1. Header info banner (large and bold)
       ctx.fillStyle = '#10b981';
@@ -374,16 +399,16 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillStyle = '#10b981';
       ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
       
-      // Top Left tag
+      // Top Left tag (show user primary role/stack if available)
+      const roleText = (data?.role || 'BUILDER').trim().toUpperCase();
       ctx.textAlign = 'left';
-      ctx.fillText('TARGET: BUILDER', rx + 24 * scale, ry + 35 * scale);
+      ctx.fillText(`TARGET: ${roleText}`, rx + 24 * scale, ry + 35 * scale);
       
       // Top Right tag
       ctx.textAlign = 'right';
       ctx.fillText('LOC: GOA_SAND', rx + size - 24 * scale, ry + 35 * scale);
 
-      // 3. Cyber stats on the bottom of the portrait
-      // Status bar overlay (Green badge, black text)
+      // 3. Status bar overlay (Green badge, black text - shows builder title if available)
       ctx.fillStyle = '#10b981';
       ctx.beginPath();
       const bW = 160 * scale;
@@ -395,10 +420,11 @@ export const pfpTemplates: PFPTemplate[] = [
       }
       ctx.fill();
 
+      const titleText = (data?.title || 'VERIFIED').trim().toUpperCase();
       ctx.fillStyle = '#020604';
-      ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'center';
-      ctx.fillText('STATUS: VERIFIED', rx + 24 * scale + bW / 2, ry + size - 31 * scale);
+      ctx.fillText(`SYS: ${titleText}`, rx + 24 * scale + bW / 2, ry + size - 31 * scale);
 
       // Coordinates at bottom right
       ctx.fillStyle = '#10b981';
@@ -406,7 +432,32 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.textAlign = 'right';
       ctx.fillText('15.2993° N, 74.1240° E', rx + size - 24 * scale, ry + size - 31 * scale);
 
-      // 4. Terminal verified system footer status
+      // 4. User Name Tag Badge overlapping bottom of circle
+      const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
+      ctx.fillStyle = '#020604'; // Black background
+      ctx.strokeStyle = '#10b981'; // Neon green border
+      ctx.lineWidth = 2 * scale;
+      
+      ctx.font = `bold ${Math.round(14 * scale)}px "Fira Code", monospace`;
+      const tw = ctx.measureText(`ID: ${nameText}`).width + 30 * scale;
+      const nameBadgeH = 32 * scale;
+      const nameBadgeY = cy + rad - nameBadgeH / 2;
+
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(cx - tw / 2, nameBadgeY, tw, nameBadgeH, 6 * scale);
+      } else {
+        ctx.rect(cx - tw / 2, nameBadgeY, tw, nameBadgeH);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#10b981';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`ID: ${nameText}`, cx, nameBadgeY + nameBadgeH / 2);
+
+      // 5. Terminal verified system footer status
       ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
       ctx.font = `${Math.round(15 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'left';

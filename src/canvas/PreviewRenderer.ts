@@ -513,7 +513,7 @@ export class PreviewRenderer {
     rotation: number,
     template: PFPTemplate,
     config: RenderConfig,
-    data?: { name?: string }
+    data?: { name?: string; role?: string; title?: string }
   ): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2d context');

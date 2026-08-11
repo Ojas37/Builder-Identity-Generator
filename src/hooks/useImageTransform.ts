@@ -87,7 +87,7 @@ export function useImageTransform() {
             rotation,
             template,
             config,
-            { name: builderData.name }
+            { name: builderData.name, role: builderData.role, title: generatedTitle }
           );
         } else {
           const template = builderTemplates.find(t => t.id === selectedBuilderTemplateId) || builderTemplates[0];
