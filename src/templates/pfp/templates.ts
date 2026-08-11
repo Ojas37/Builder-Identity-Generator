@@ -27,25 +27,25 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillRect(0, 0, width, height);
 
       // 2. Draw ornate green backing pattern (concentric arches and rings)
-      ctx.strokeStyle = 'rgba(0, 163, 89, 0.15)';
-      ctx.lineWidth = 2 * scale;
+      ctx.strokeStyle = 'rgba(0, 163, 89, 0.25)';
+      ctx.lineWidth = 3 * scale;
       ctx.beginPath();
-      ctx.arc(width / 2, height / 2 + 10 * scale, 320 * scale, 0, Math.PI * 2);
+      ctx.arc(width / 2, height / 2 + 25 * scale, 310 * scale, 0, Math.PI * 2);
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(width / 2, height / 2 + 10 * scale, 280 * scale, 0, Math.PI * 2);
+      ctx.arc(width / 2, height / 2 + 25 * scale, 275 * scale, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Curved floral design arcs in background
-      ctx.lineWidth = 1 * scale;
+      // Curved floral design arcs in background (bolder)
+      ctx.lineWidth = 1.5 * scale;
       for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
         ctx.save();
-        ctx.translate(width / 2, height / 2 + 10 * scale);
+        ctx.translate(width / 2, height / 2 + 25 * scale);
         ctx.rotate(angle);
         ctx.beginPath();
-        ctx.moveTo(210 * scale, 0);
-        ctx.quadraticCurveTo(250 * scale, 30 * scale, 280 * scale, 0);
+        ctx.moveTo(220 * scale, 0);
+        ctx.quadraticCurveTo(260 * scale, 40 * scale, 300 * scale, 0);
         ctx.stroke();
         ctx.restore();
       }
@@ -53,65 +53,65 @@ export const pfpTemplates: PFPTemplate[] = [
     renderFrame(ctx, config) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2 + 10 * scale;
+      const cy = height / 2 + 25 * scale;
       const rad = 210 * scale; // Circular portrait radius matching centered layout
 
-      // 1. Draw two large tropical palm trees framing the left and right sides
-      PreviewRenderer.drawPalmTree(ctx, 80 * scale, height, 480 * scale, scale, 'rgba(0, 163, 89, 0.7)');
-      PreviewRenderer.drawPalmTree(ctx, width - 80 * scale, height, 480 * scale, scale, 'rgba(0, 163, 89, 0.7)');
+      // 1. Draw two large tropical palm trees framing the left and right sides (bold and prominent!)
+      PreviewRenderer.drawPalmTree(ctx, 85 * scale, height, 480 * scale, scale, '#00a359');
+      PreviewRenderer.drawPalmTree(ctx, width - 85 * scale, height, 480 * scale, scale, '#00a359');
 
       // Taller golden palm tree outlines
-      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.3)');
-      PreviewRenderer.drawPalmTree(ctx, width - 40 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.3)');
+      PreviewRenderer.drawPalmTree(ctx, 45 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.45)');
+      PreviewRenderer.drawPalmTree(ctx, width - 45 * scale, height - 20 * scale, 580 * scale, scale, 'rgba(255, 208, 0, 0.45)');
 
-      // 2. Thick gold outer circle frame around photo
+      // 2. Thick gold outer circle frame around photo (bold width)
       ctx.strokeStyle = '#ffd000';
-      ctx.lineWidth = 6 * scale;
+      ctx.lineWidth = 12 * scale;
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.stroke();
 
-      // 3. Gold scalloped border ring outside the photo frame
-      PreviewRenderer.drawScallopedBorder(ctx, cx, cy, rad + 8 * scale, scale);
+      // 3. Gold scalloped border ring outside the photo frame (large scallops)
+      PreviewRenderer.drawScallopedBorder(ctx, cx, cy, rad + 12 * scale, scale);
     },
     renderOverlay(ctx, config, data) {
       const { width, height, scale } = config;
       const cx = width / 2;
-      const cy = height / 2 + 10 * scale;
+      const cy = height / 2 + 25 * scale;
       const rad = 210 * scale;
 
-      // 1. Top Yellow Header Block (fills width)
+      // 1. Top Yellow Header Block (height 110px)
       ctx.fillStyle = '#ffd000';
-      ctx.fillRect(0, 0, width, 80 * scale);
+      ctx.fillRect(0, 0, width, 110 * scale);
 
-      // Header Text: HACKER HOUSE गोवा
+      // Header Text: HACKER HOUSE गोवा (very bold and large)
       ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(20 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.font = `bold ${Math.round(36 * scale)}px "DM Serif Display", Georgia, serif`;
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      ctx.fillText('HACKER HOUSE', cx + 25 * scale, 32 * scale);
+      ctx.fillText('HACKER HOUSE', cx + 40 * scale, 45 * scale);
 
       // Pink stamp "गोवा" next to header
       ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.font = `bold ${Math.round(32 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'left';
-      ctx.fillText('गोवा', cx + 35 * scale, 32 * scale);
+      ctx.fillText('गोवा', cx + 60 * scale, 45 * scale);
 
-      // Subtitle below header text
+      // Subtitle below header text (bold and legible)
       ctx.fillStyle = '#004d26';
-      ctx.font = `bold ${Math.round(8 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.font = `bold ${Math.round(13 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('GOA, INDIA  •  OCT 28-31  •  HH STUDIO', cx, 58 * scale);
+      ctx.fillText('GOA, INDIA  •  OCT 28-31  •  HH STUDIO', cx, 85 * scale);
 
-      // 2. Curved gold text around the circular portrait
+      // 2. Curved gold text around the circular portrait (extremely bold and large)
       PreviewRenderer.drawCurvedText(
         ctx,
         'HACKER HOUSE GOA 2026 ★ BUILD IN GOA',
         cx,
         cy,
-        rad + 22 * scale,
+        rad + 28 * scale,
         -Math.PI / 2,
-        `bold ${Math.round(13 * scale)}px "DM Serif Display", Georgia, serif`,
+        `bold ${Math.round(24 * scale)}px "DM Serif Display", Georgia, serif`,
         '#ffd000',
         scale
       );
@@ -121,28 +121,28 @@ export const pfpTemplates: PFPTemplate[] = [
         '★ SHIP FROM PARADISE ★ 28 - 31 OCT 2026',
         cx,
         cy,
-        rad + 22 * scale,
+        rad + 28 * scale,
         Math.PI / 2,
-        `bold ${Math.round(9 * scale)}px "Fira Code", monospace`,
+        `bold ${Math.round(15 * scale)}px "Fira Code", monospace`,
         '#ffd000',
         scale,
         true
       );
 
-      // 3. User Name Tag Badge overlapping bottom of circle
+      // 3. User Name Tag Badge overlapping bottom of circle (large and readable)
       const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
       ctx.fillStyle = '#002612'; // Dark green pill background
       ctx.strokeStyle = '#ffd000'; // Gold border
-      ctx.lineWidth = 2 * scale;
+      ctx.lineWidth = 3 * scale;
       
-      ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
-      const tw = ctx.measureText(nameText).width + 30 * scale;
-      const bH = 26 * scale;
-      const bY = cy + rad - bH / 2;
+      ctx.font = `bold ${Math.round(22 * scale)}px "Space Grotesk", sans-serif`;
+      const tw = ctx.measureText(nameText).width + 50 * scale;
+      const bH = 42 * scale;
+      const bY = cy + rad - bH / 2 + 6 * scale;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(cx - tw / 2, bY, tw, bH, 6 * scale);
+        ctx.roundRect(cx - tw / 2, bY, tw, bH, 10 * scale);
       } else {
         ctx.rect(cx - tw / 2, bY, tw, bH);
       }
@@ -154,18 +154,18 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.textBaseline = 'middle';
       ctx.fillText(nameText, cx, bY + bH / 2);
 
-      // 4. Bottom Semi-transparent Footer block
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fillRect(0, height - 55 * scale, width, 55 * scale);
+      // 4. Bottom Semi-transparent Footer block (height 75px)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+      ctx.fillRect(0, height - 75 * scale, width, 75 * scale);
 
       ctx.fillStyle = '#ffd000';
-      ctx.font = `bold ${Math.round(11 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.font = `bold ${Math.round(22 * scale)}px "Space Grotesk", sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('#FrameInGoa', cx, height - 32 * scale);
+      ctx.fillText('#FrameInGoa', cx, height - 42 * scale);
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.font = `${Math.round(7.5 * scale)}px "Fira Code", monospace`;
-      ctx.fillText('hhgoa.com  •  Oct 28-31, 2026  •  Goa, India', cx, height - 15 * scale);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = `${Math.round(13 * scale)}px "Fira Code", monospace`;
+      ctx.fillText('hhgoa.com  •  Oct 28-31, 2026  •  Goa, India', cx, height - 18 * scale);
     },
   },
   {
@@ -193,10 +193,10 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillRect(0, 0, width, height);
 
       // Soft green background radial grid details
-      ctx.strokeStyle = 'rgba(0, 108, 53, 0.03)';
-      ctx.lineWidth = 1 * scale;
+      ctx.strokeStyle = 'rgba(0, 108, 53, 0.05)';
+      ctx.lineWidth = 1.5 * scale;
       ctx.beginPath();
-      for (let i = 40 * scale; i < width; i += 80 * scale) {
+      for (let i = 50 * scale; i < width; i += 100 * scale) {
         ctx.moveTo(i, 0);
         ctx.lineTo(i, height);
         ctx.moveTo(0, i);
@@ -210,33 +210,33 @@ export const pfpTemplates: PFPTemplate[] = [
       const cy = height / 2;
       const rad = 260 * scale;
 
-      // 1. Draw palm tree graphics in bottom corners
-      PreviewRenderer.drawPalmTree(ctx, 40 * scale, height - 30 * scale, 120 * scale, scale, '#006c35');
-      PreviewRenderer.drawPalmTree(ctx, width - 40 * scale, height - 30 * scale, 120 * scale, scale, '#006c35');
+      // 1. Draw palm tree graphics in bottom corners (larger)
+      PreviewRenderer.drawPalmTree(ctx, 50 * scale, height - 30 * scale, 150 * scale, scale, '#006c35');
+      PreviewRenderer.drawPalmTree(ctx, width - 50 * scale, height - 30 * scale, 150 * scale, scale, '#006c35');
 
       // Draw beach sand dunes outlines
-      ctx.fillStyle = 'rgba(0, 108, 53, 0.04)';
+      ctx.fillStyle = 'rgba(0, 108, 53, 0.06)';
       ctx.beginPath();
-      ctx.ellipse(80 * scale, height - 30 * scale, 80 * scale, 16 * scale, 0, 0, Math.PI * 2);
-      ctx.ellipse(width - 80 * scale, height - 30 * scale, 80 * scale, 16 * scale, 0, 0, Math.PI * 2);
+      ctx.ellipse(80 * scale, height - 30 * scale, 100 * scale, 22 * scale, 0, 0, Math.PI * 2);
+      ctx.ellipse(width - 80 * scale, height - 30 * scale, 100 * scale, 22 * scale, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Draw retro postage stamp in top right corner
-      PreviewRenderer.drawPerforatedStamp(ctx, width - 110 * scale, 30 * scale, 80 * scale, 100 * scale, scale, '#006c35');
+      // 2. Draw retro postage stamp in top right corner (large)
+      PreviewRenderer.drawPerforatedStamp(ctx, width - 150 * scale, 30 * scale, 110 * scale, 140 * scale, scale, '#006c35');
 
-      // 3. Thick forest green circle frame around photo
+      // 3. Thick forest green circle frame around photo (bolder)
       ctx.strokeStyle = '#006c35';
-      ctx.lineWidth = 6 * scale;
+      ctx.lineWidth = 10 * scale;
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.stroke();
 
       // 4. Dashed golden inner tracking ring
       ctx.strokeStyle = '#ffd000';
-      ctx.lineWidth = 1.5 * scale;
-      ctx.setLineDash([6 * scale, 4 * scale]);
+      ctx.lineWidth = 2.5 * scale;
+      ctx.setLineDash([8 * scale, 5 * scale]);
       ctx.beginPath();
-      ctx.arc(cx, cy, rad - 8 * scale, 0, Math.PI * 2);
+      ctx.arc(cx, cy, rad - 12 * scale, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
     },
@@ -246,31 +246,32 @@ export const pfpTemplates: PFPTemplate[] = [
       const cy = height / 2;
       const rad = 260 * scale;
 
-      // 1. Top Event Heading text
+      // 1. Top Event Heading text (very large)
       ctx.fillStyle = '#006c35';
-      ctx.font = `bold ${Math.round(18 * scale)}px "DM Serif Display", Georgia, serif`;
+      ctx.font = `bold ${Math.round(28 * scale)}px "DM Serif Display", Georgia, serif`;
       ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
       ctx.fillText('HACKER HOUSE GOA', 35 * scale, 55 * scale);
 
       ctx.fillStyle = '#ff007f';
-      ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
-      ctx.fillText('गोवा', 245 * scale, 55 * scale);
+      ctx.font = `bold ${Math.round(24 * scale)}px "Space Grotesk", sans-serif`;
+      ctx.fillText('गोवा', 345 * scale, 55 * scale);
 
-      // 2. Curved postage stamp details wrapping circular frame
+      // 2. Curved postage stamp details wrapping circular frame (bold and legible)
       PreviewRenderer.drawCurvedText(
         ctx,
         '★ DEPARTURE: OCT 28 ★ SHIP FROM PARADISE ★',
         cx,
         cy,
-        rad + 20 * scale,
+        rad + 25 * scale,
         -Math.PI / 2,
-        `bold ${Math.round(10 * scale)}px "Fira Code", monospace`,
+        `bold ${Math.round(14 * scale)}px "Fira Code", monospace`,
         '#006c35',
         scale
       );
 
-      // 3. Postmark stamp at bottom right
-      PreviewRenderer.drawPostmarkStamp(ctx, width - 85 * scale, height - 95 * scale, 35 * scale, 'GOA 2026', '#006c35', scale);
+      // 3. Postmark stamp at bottom right (large)
+      PreviewRenderer.drawPostmarkStamp(ctx, width - 110 * scale, height - 125 * scale, 50 * scale, 'GOA 2026', '#006c35', scale);
     },
   },
   {
@@ -298,9 +299,9 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillRect(0, 0, width, height);
 
       // Glowing grid overlay
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.06)';
-      ctx.lineWidth = 1 * scale;
-      const gridSize = 40 * scale;
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.08)';
+      ctx.lineWidth = 1.5 * scale;
+      const gridSize = 50 * scale;
 
       ctx.beginPath();
       for (let x = 0; x < width; x += gridSize) {
@@ -315,9 +316,9 @@ export const pfpTemplates: PFPTemplate[] = [
 
       // Soft vertical scanning lines gradient
       const scanGrad = ctx.createLinearGradient(0, 0, 0, height);
-      scanGrad.addColorStop(0, 'rgba(16, 185, 129, 0.05)');
+      scanGrad.addColorStop(0, 'rgba(16, 185, 129, 0.08)');
       scanGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.0)');
-      scanGrad.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+      scanGrad.addColorStop(1, 'rgba(16, 185, 129, 0.08)');
       ctx.fillStyle = scanGrad;
       ctx.fillRect(0, 0, width, height);
     },
@@ -327,11 +328,11 @@ export const pfpTemplates: PFPTemplate[] = [
       const rx = (width - size) / 2;
       const ry = (height - size) / 2;
 
-      // 1. Neon glowing outline around the central portrait
-      ctx.shadowColor = 'rgba(16, 185, 129, 0.4)';
-      ctx.shadowBlur = 10 * scale;
+      // 1. Neon glowing outline around the central portrait (bold)
+      ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
+      ctx.shadowBlur = 15 * scale;
       ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 2 * scale;
+      ctx.lineWidth = 5 * scale;
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
         ctx.roundRect(rx, ry, size, size, 24 * scale);
@@ -341,11 +342,11 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.stroke();
       ctx.shadowBlur = 0; // Reset shadow
 
-      // 2. Technical corner target reticle brackets
-      const len = 25 * scale;
-      const offset = 12 * scale;
+      // 2. Technical corner target reticle brackets (thick)
+      const len = 35 * scale;
+      const offset = 18 * scale;
       ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 3 * scale;
+      ctx.lineWidth = 5 * scale;
 
       // Top Left Corner
       ctx.beginPath();
@@ -381,62 +382,64 @@ export const pfpTemplates: PFPTemplate[] = [
       const rx = (width - size) / 2;
       const ry = (height - size) / 2;
 
-      // 1. Header info banner
+      // 1. Header info banner (large and bold)
       ctx.fillStyle = '#10b981';
-      ctx.font = `bold ${Math.round(15 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(20 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.fillText('SYS_ACTIVE // HH_GOA_2026', rx, ry - 30 * scale);
+      ctx.fillText('SYS_ACTIVE // HH_GOA_2026', rx, ry - 35 * scale);
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = `${Math.round(12 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(15 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'right';
-      ctx.fillText('IP: 192.168.26.1', rx + size, ry - 30 * scale);
+      ctx.fillText('IP: 192.168.26.1', rx + size, ry - 35 * scale);
 
       // 2. Target acquisition metrics printed over the corners
       ctx.fillStyle = '#10b981';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
       
       // Top Left tag
       ctx.textAlign = 'left';
-      ctx.fillText('TARGET: BUILDER', rx + 16 * scale, ry + 25 * scale);
+      ctx.fillText('TARGET: BUILDER', rx + 24 * scale, ry + 35 * scale);
       
       // Top Right tag
       ctx.textAlign = 'right';
-      ctx.fillText('LOC: GOA_SAND', rx + size - 16 * scale, ry + 25 * scale);
+      ctx.fillText('LOC: GOA_SAND', rx + size - 24 * scale, ry + 35 * scale);
 
       // 3. Cyber stats on the bottom of the portrait
       // Status bar overlay (Green badge, black text)
       ctx.fillStyle = '#10b981';
       ctx.beginPath();
+      const bW = 160 * scale;
+      const bH = 28 * scale;
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(rx + 16 * scale, ry + size - 36 * scale, 120 * scale, 20 * scale, 4 * scale);
+        ctx.roundRect(rx + 24 * scale, ry + size - 45 * scale, bW, bH, 4 * scale);
       } else {
-        ctx.rect(rx + 16 * scale, ry + size - 36 * scale, 120 * scale, 20 * scale);
+        ctx.rect(rx + 24 * scale, ry + size - 45 * scale, bW, bH);
       }
       ctx.fill();
 
       ctx.fillStyle = '#020604';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'center';
-      ctx.fillText('STATUS: VERIFIED', rx + 76 * scale, ry + size - 26 * scale);
+      ctx.fillText('STATUS: VERIFIED', rx + 24 * scale + bW / 2, ry + size - 31 * scale);
 
       // Coordinates at bottom right
       ctx.fillStyle = '#10b981';
-      ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'right';
-      ctx.fillText('15.2993° N, 74.1240° E', rx + size - 16 * scale, ry + size - 26 * scale);
+      ctx.fillText('15.2993° N, 74.1240° E', rx + size - 24 * scale, ry + size - 31 * scale);
 
       // 4. Terminal verified system footer status
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.4)';
-      ctx.font = `${Math.round(11 * scale)}px "Fira Code", monospace`;
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+      ctx.font = `${Math.round(15 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'left';
-      ctx.fillText('BUILD_STATION: ONLINE', rx, ry + size + 30 * scale);
+      ctx.fillText('BUILD_STATION: ONLINE', rx, ry + size + 35 * scale);
 
       ctx.fillStyle = '#10b981';
-      ctx.font = `bold ${Math.round(11 * scale)}px "Fira Code", monospace`;
+      ctx.font = `bold ${Math.round(15 * scale)}px "Fira Code", monospace`;
       ctx.textAlign = 'right';
-      ctx.fillText('TERMINAL_SYS_SECURED', rx + size, ry + size + 30 * scale);
+      ctx.fillText('TERMINAL_SYS_SECURED', rx + size, ry + size + 35 * scale);
     },
   },
 ];
