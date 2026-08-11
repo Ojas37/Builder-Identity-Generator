@@ -616,43 +616,41 @@ export class PreviewRenderer {
       ctx.fillRect(0, 0, width, height);
     }
 
-    // 2. Draw Top Lanyard slot (80x14 slot at y=16 in base 500x790 coordinates)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1 * scale;
-    
-    const slotW = 80 * scale;
-    const slotH = 14 * scale;
-    const slotX = (width - slotW) / 2;
-    const slotY = 16 * scale;
-    ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(slotX, slotY, slotW, slotH, 6 * scale);
-    } else {
-      ctx.rect(slotX, slotY, slotW, slotH);
-    }
-    ctx.fill();
-    ctx.stroke();
+    // 4. Draw User Portrait
+    const isBoardingPass = template.id === 'goa-boarding-pass';
 
-    // 3. Draw Header Brand Details
-    ctx.fillStyle = template.colors.accent;
-    ctx.font = `extrabold ${Math.round(18 * scale)}px ${template.typography.heading}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'alphabetic';
-    
-    // Draw top brand logo text if templates don't override the top area
-    if (template.id !== 'goa-boarding-pass') {
+    // 2 & 3. For the Bg.png boarding-pass, skip lanyard slot and brand header — the image contains them
+    if (!isBoardingPass) {
+      // Draw Top Lanyard slot (80x14 slot at y=16 in base 500x790 coordinates)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1 * scale;
+      const slotW = 80 * scale;
+      const slotH = 14 * scale;
+      const slotX = (width - slotW) / 2;
+      const slotY = 16 * scale;
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(slotX, slotY, slotW, slotH, 6 * scale);
+      } else {
+        ctx.rect(slotX, slotY, slotW, slotH);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      // Draw Header Brand Details
+      ctx.fillStyle = template.colors.accent;
+      ctx.font = `extrabold ${Math.round(18 * scale)}px ${template.typography.heading}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
       ctx.fillText('HH GOA // 2026', width / 2, 70 * scale);
       ctx.fillStyle = template.colors.text;
       ctx.font = `bold ${Math.round(11 * scale)}px ${template.typography.body}`;
       ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
     }
 
-    // 4. Draw User Portrait
-    const isBoardingPass = template.id === 'goa-boarding-pass';
-    
     // For Bg.png template: circle center is cx=251, cy=321 (in 500px base coords)
-    // The inner circle radius (inside the red ring) is ~155px
+    // The inner circle radius (inside the red ring) is ~152px
     const portRadius = isBoardingPass ? 152 * scale : 120 * scale;
     const portCX = isBoardingPass ? 251 * scale : width / 2;
     const portCY = isBoardingPass ? 321 * scale : 260 * scale;
@@ -661,7 +659,6 @@ export class PreviewRenderer {
     const portY = portCY - portRadius;
 
     ctx.save();
-    // Circular crop portrait
     ctx.beginPath();
     ctx.arc(portCX, portCY, portRadius, 0, Math.PI * 2);
     ctx.clip();
