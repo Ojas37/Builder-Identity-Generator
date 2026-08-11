@@ -54,6 +54,7 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ mode }) => {
       await ImageExporter.exportGraphic(mode, exportState);
       setStatus('success');
     } catch (err: any) {
+      console.error('PNG export failed:', err);
       setStatus('error');
       setErrorMessage(err.message || 'Generation failed.');
     }

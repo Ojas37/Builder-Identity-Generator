@@ -649,11 +649,11 @@ export class PreviewRenderer {
       ctx.fillText('BUILDER IDENTITY', width / 2, 92 * scale);
     }
 
-    // For Bg.png template: circle center is cx=269, cy=299 (in 500x750 base coords)
-    // The inner circle radius (inside the decorative ring) is ~140px
-    const portRadius = isBoardingPass ? 140 * scale : 120 * scale;
-    const portCX = isBoardingPass ? 269 * scale : width / 2;
-    const portCY = isBoardingPass ? 299 * scale : 260 * scale;
+    // For Bg.png template: circle is centered at cx=244
+    // Vertical center at cy=310, inner radius ~142px (inside the decorative ring)
+    const portRadius = isBoardingPass ? 142 * scale : 120 * scale;
+    const portCX = isBoardingPass ? 244 * scale : width / 2;
+    const portCY = isBoardingPass ? 310 * scale : 260 * scale;
     const portSize = portRadius * 2;
     const portX = portCX - portRadius;
     const portY = portCY - portRadius;
@@ -772,6 +772,10 @@ export class PreviewRenderer {
     }
     return new Promise((resolve) => {
       const img = new Image();
+      const isExternal = src.startsWith('http') && !src.startsWith(window.location.origin);
+      if (isExternal) {
+        img.setAttribute('crossOrigin', 'anonymous');
+      }
       img.src = src;
       img.onload = () => {
         this.imageCache.set(src, img);

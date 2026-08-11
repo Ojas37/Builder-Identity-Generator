@@ -72,19 +72,19 @@ export const builderTemplates: BuilderTemplate[] = [
       }
     },
     renderOverlay(ctx, config, data) {
-      const { width, scale } = config;
-      const cx = width / 2;
+      const { scale } = config;
 
       // Bg.png is 1024x1536 → rendered at 500x750.
       // All coordinates below are in the 500x750 base canvas space.
       const cream = '#f5f0e2';
 
       // ── NAME BOX ──────────────────────────────────────────────────
-      // Box interior in 500×750: x ≈ 71–365, y ≈ 455–530
-      const nameBoxX  = 72 * scale;
-      const nameBoxY  = 458 * scale;
-      const nameBoxW  = 290 * scale;
-      const nameBoxH  = 68 * scale;
+      // Box interior in 500×750: x ≈ 49–439 (center 244), y ≈ 409–522
+      const nameBoxCX = 244 * scale;
+      const nameBoxW  = 280 * scale;
+      const nameBoxX  = nameBoxCX - nameBoxW / 2;
+      const nameBoxY  = 425 * scale;
+      const nameBoxH  = 80 * scale;
       const nameBoxCY = nameBoxY + nameBoxH / 2;
 
       // Erase the baked-in "NAME" placeholder text
@@ -98,15 +98,16 @@ export const builderTemplates: BuilderTemplate[] = [
         ctx.font = `bold ${Math.round(20 * scale)}px "Space Grotesk", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(nameText, cx, nameBoxCY, nameBoxW - 12 * scale);
+        ctx.fillText(nameText, nameBoxCX, nameBoxCY, nameBoxW - 12 * scale);
       }
 
       // ── ROLE BOX ──────────────────────────────────────────────────
-      // Box interior in 500×750: x ≈ 80–420, y ≈ 545–610
-      const roleBoxX  = 80 * scale;
-      const roleBoxY  = 548 * scale;
-      const roleBoxW  = 340 * scale;
-      const roleBoxH  = 56 * scale;
+      // Box interior in 500×750: x ≈ 53–439 (center 246), y ≈ 523–634
+      const roleBoxCX = 246 * scale;
+      const roleBoxW  = 280 * scale;
+      const roleBoxX  = roleBoxCX - roleBoxW / 2;
+      const roleBoxY  = 537 * scale;
+      const roleBoxH  = 80 * scale;
       const roleBoxCY = roleBoxY + roleBoxH / 2;
 
       // Erase the baked-in "ROLE" placeholder text
@@ -120,7 +121,7 @@ export const builderTemplates: BuilderTemplate[] = [
         ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(roleText, cx, roleBoxCY, roleBoxW - 12 * scale);
+        ctx.fillText(roleText, roleBoxCX, roleBoxCY, roleBoxW - 12 * scale);
       }
 
       // ── BUILDER TITLE (column 1, bottom section) ───────────────────
