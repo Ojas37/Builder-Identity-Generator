@@ -105,15 +105,29 @@ export const pfpTemplates: PFPTemplate[] = [
         true
       );
 
-      // 3. User Name Tag Badge overlapping bottom of circle (large and readable)
+      // 3. User Name & Credentials Tag Badge overlapping bottom of circle (large and readable)
       const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
+      const roleText = (data?.role || '').trim().toUpperCase();
+      const titleText = (data?.title || '').trim().toUpperCase();
+
+      // Combine role & title into a single string for subtitle
+      let subText = roleText;
+      if (titleText) {
+        subText = roleText ? `${roleText} • ${titleText}` : titleText;
+      }
+
       ctx.fillStyle = '#002612'; // Dark green pill background
       ctx.strokeStyle = '#ffd000'; // Gold border
       ctx.lineWidth = 3 * scale;
       
-      ctx.font = `bold ${Math.round(22 * scale)}px "Space Grotesk", sans-serif`;
-      const tw = ctx.measureText(nameText).width + 50 * scale;
-      const bH = 42 * scale;
+      ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+      const nameWidth = ctx.measureText(nameText).width;
+
+      ctx.font = `bold ${Math.round(10.5 * scale)}px "Fira Code", monospace`;
+      const subWidth = subText ? ctx.measureText(subText).width : 0;
+
+      const tw = Math.max(nameWidth, subWidth) + 50 * scale;
+      const bH = subText ? 52 * scale : 38 * scale;
       const bY = cy + rad - bH / 2 + 6 * scale;
 
       ctx.beginPath();
@@ -128,7 +142,17 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(nameText, cx, bY + bH / 2);
+      if (subText) {
+        ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.fillText(nameText, cx, bY + 18 * scale);
+        
+        ctx.fillStyle = '#ffd000'; // Gold accents for credentials
+        ctx.font = `bold ${Math.round(10.5 * scale)}px "Fira Code", monospace`;
+        ctx.fillText(subText, cx, bY + 36 * scale);
+      } else {
+        ctx.font = `bold ${Math.round(20 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.fillText(nameText, cx, bY + bH / 2);
+      }
 
       // 4. Bottom Semi-transparent Footer block (height 75px)
       ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
@@ -248,13 +272,21 @@ export const pfpTemplates: PFPTemplate[] = [
 
       // 3. Passenger Ticket label at the bottom of the circle
       const nameText = (data?.name || 'YOUR NAME').trim().toUpperCase();
+      const roleText = (data?.role || '').trim().toUpperCase();
+      const titleText = (data?.title || 'BUILDER').trim().toUpperCase();
+
       ctx.fillStyle = '#fcfaf5'; // Cream ticket background
       ctx.strokeStyle = '#006c35'; // Green border
       ctx.lineWidth = 2 * scale;
       
-      ctx.font = `bold ${Math.round(14 * scale)}px "Fira Code", monospace`;
-      const tw = ctx.measureText(`PASS: ${nameText}`).width + 30 * scale;
-      const bH = 30 * scale;
+      ctx.font = `bold ${Math.round(13 * scale)}px "Fira Code", monospace`;
+      const line1 = `PASS: ${nameText}`;
+      const line2 = `ROLE: ${roleText || 'BUILDER'} // CLASS: ${titleText}`;
+
+      const w1 = ctx.measureText(line1).width;
+      const w2 = ctx.measureText(line2).width;
+      const tw = Math.max(w1, w2) + 35 * scale;
+      const bH = 46 * scale;
       const bY = cy + rad - bH / 2;
 
       ctx.beginPath();
@@ -265,7 +297,10 @@ export const pfpTemplates: PFPTemplate[] = [
       ctx.fillStyle = '#006c35';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`PASS: ${nameText}`, cx, bY + bH / 2);
+      ctx.fillText(line1, cx, bY + 14 * scale);
+      
+      ctx.font = `bold ${Math.round(9 * scale)}px "Fira Code", monospace`;
+      ctx.fillText(line2, cx, bY + 32 * scale);
 
       // 4. Postmark stamp at bottom right (large)
       PreviewRenderer.drawPostmarkStamp(ctx, width - 110 * scale, height - 125 * scale, 50 * scale, 'GOA 2026', '#006c35', scale);
