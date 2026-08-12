@@ -76,52 +76,39 @@ export const builderTemplates: BuilderTemplate[] = [
 
       // Bg.png is 1024x1536 → rendered at 500x750.
       // All coordinates below are in the 500x750 base canvas space.
-      const cream = '#f5f0e2';
+      // Card background warm beige color:
+      const warmBeige = '#f5e6d4';
 
       // ── NAME BOX ──────────────────────────────────────────────────
       // Box interior in 500×750: x ≈ 49–439 (center 244), y ≈ 409–522
       const nameBoxCX = 244 * scale;
-      const nameBoxW  = 280 * scale;
-      const nameBoxX  = nameBoxCX - nameBoxW / 2;
-      const nameBoxY  = 425 * scale;
-      const nameBoxH  = 80 * scale;
-      const nameBoxCY = nameBoxY + nameBoxH / 2;
+      const nameBoxW  = 380 * scale; // Full inner width of Name box
+      const nameBoxCY = 485 * scale; // Positioned lower to reduce gap and balance space
 
-      // Erase the baked-in "NAME" placeholder text
-      ctx.fillStyle = cream;
-      ctx.fillRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
-
-      // Draw the user's name
+      // Draw the user's name directly in the box
       const nameText = (data?.name || '').trim().toUpperCase();
       if (nameText) {
         ctx.fillStyle = '#004d26';
-        ctx.font = `bold ${Math.round(20 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(nameText, nameBoxCX, nameBoxCY, nameBoxW - 12 * scale);
+        ctx.fillText(nameText, nameBoxCX, nameBoxCY, nameBoxW - 20 * scale);
       }
 
       // ── ROLE BOX ──────────────────────────────────────────────────
       // Box interior in 500×750: x ≈ 53–439 (center 246), y ≈ 523–634
       const roleBoxCX = 246 * scale;
-      const roleBoxW  = 280 * scale;
-      const roleBoxX  = roleBoxCX - roleBoxW / 2;
-      const roleBoxY  = 537 * scale;
-      const roleBoxH  = 80 * scale;
-      const roleBoxCY = roleBoxY + roleBoxH / 2;
+      const roleBoxW  = 380 * scale; // Full inner width of Role box
+      const roleBoxCY = 535 * scale; // Positioned higher to reduce gap and balance space
 
-      // Erase the baked-in "ROLE" placeholder text
-      ctx.fillStyle = cream;
-      ctx.fillRect(roleBoxX, roleBoxY, roleBoxW, roleBoxH);
-
-      // Draw the user's role
+      // Draw the user's role directly in the box
       const roleText = (data?.role || '').trim().toUpperCase();
       if (roleText) {
-        ctx.fillStyle = '#1a3a20';
-        ctx.font = `bold ${Math.round(14 * scale)}px "Space Grotesk", sans-serif`;
+        ctx.fillStyle = '#004d26';
+        ctx.font = `bold ${Math.round(18 * scale)}px "Space Grotesk", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(roleText, roleBoxCX, roleBoxCY, roleBoxW - 12 * scale);
+        ctx.fillText(roleText, roleBoxCX, roleBoxCY, roleBoxW - 20 * scale);
       }
 
       // ── BUILDER TITLE (column 1, bottom section) ───────────────────
@@ -133,8 +120,8 @@ export const builderTemplates: BuilderTemplate[] = [
       const titleAreaW  = 150 * scale;
       const titleAreaH  = 50 * scale;
 
-      // Erase the baked-in title text
-      ctx.fillStyle = cream;
+      // Erase the baked-in title text using the exact card background color
+      ctx.fillStyle = warmBeige;
       ctx.fillRect(titleAreaX, titleAreaY, titleAreaW, titleAreaH);
 
       // Draw user's title (split on spaces, max 2 lines)
